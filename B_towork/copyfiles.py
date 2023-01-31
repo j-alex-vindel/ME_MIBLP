@@ -65,7 +65,6 @@ def copy_file_chname(cfile:str=None,bacteria:list=None,nfiles:int=None,t:int=Non
     print(f"# {finsizedir-cursizedir} Files Added!!")
 
 
-
 if __name__ == '__main__':
     # copyfile_name(names=sys.argv[1:len(sys.argv)-1],t=int(sys.argv[-1]))
     file_to_copy = sys.argv[1]
