@@ -13,12 +13,12 @@ ks = int(sys.argv[0][-4])
 
 # =========================================== K=2 ===========================
 try:
-    m = MILP_solve_NOP(network=metnet,k=2,log=False,speed=True)
+    m = MILP_solve_NOP(network=metnet,k=1,log=False,speed=True)
 except:
     m = Result(metnet.Name,['NA' for i in range(ks)],[1 for i in metnet.M],metnet.FBA,'inf','NA') 
 
 try:
-    cb = CB_sol_2_NOP(network=metnet,k=2,log=False,speed=True)
+    cb = CB_sol_2_NOP(network=metnet,k=1,log=False,speed=True)
 except:
     cb = Result_cb(metnet.Name,['NA'for i in range(ks)],[1 for i in metnet.M],metnet.FBA,metnet.FBA,'inf','NA')
     
