@@ -535,7 +535,8 @@ def CB_sol_2_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,
                 return
             cur_obj = round(model.cbGet(GRB.Callback.MIPSOL_OBJBST),6)
             cur_bd = round(model.cbGet(GRB.Callback.MIPSOL_OBJBND),6)
-
+            print(f"Vbio: {model._voj[network.biomass]}")
+            print(f"Vche: {model._voj[network.chemical]}")
             model._vi, inner_status = inner(model._inner, model._yoj)
 
 # ============================ Checking Inner Optimality Status ===================================
@@ -543,7 +544,7 @@ def CB_sol_2_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,
             # print(f"Objective = {cur_obj}")
             # print(f"Best Bound = {cur_bd}")
             # print(f"Curnt Pbnd = {model._pbnd}")
-
+            print(f"inner value{model._vi[network.chemical]}")
             if inner_status != GRB.OPTIMAL:
                 # print(f"optimality cuts inner not optinal MIPNODE")
                 model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
