@@ -82,7 +82,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                 # print(f"optimality cuts inner not optinal MIPNODE")
                 model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
             else:
-                vinner_biomas_value = round(model._vi[network.biomass],6)
+                vinner_chemical_value = round(model._vi[network.chemical],6)
                 knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.KO)
                 ki = (i for i in combinations(knockset_inner,k))
 
@@ -92,11 +92,11 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     # print(f'optimality cuts pbnd - vi[chemical')
                     model.cbLazy(sum(model._varsy[j] for j in knockset) >= 1)
 
-                elif (abs(vij[network.biomass] - model._voj[network.biomass]) > 1e-6):
+                elif (abs(vij[network.chemical] - model._voj[network.chemical]) > 1e-6):
                     # print(f"Big M cut")
                     for comb in ki:
-                        model.cbLazy(vinner_biomas_value <= model._vars[network.biomass] +
-                            (math.ceil(vij[network.biomass]*10)/10) *(sum(model._varsy[f] for f in comb)))
+                        model.cbLazy(vinner_chemical_value <= model._vars[network.chemical] +
+                            (math.ceil(vij[network.chemical]*10)/10) *(sum(model._varsy[f] for f in comb)))
 
                 else:
                     # print(f"pbnd = cur_obj")
