@@ -93,11 +93,11 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     # print(f'optimality cuts pbnd - vi[chemical')
                     model.cbLazy(sum(model._varsy[j] for j in knockset) >= 1)
                 
-                elif model._vi[network.chemical] - model._vo[network.chemical] >= 1e-6:
+                elif model._vi[network.chemical] - model._voj[network.chemical] >= 1e-6:
                     model.cbLazy(vi_chem_val <= model._vars[network.chemical] + network.BM(sum(model._varsy[i] for i in knockset)))
                     model._pbnd = model._vi[network.chemical] 
 
-                elif abs((model._vi[network.chemical] - model._vo[network.chemical])) > 1e-6:
+                elif abs((model._vi[network.biomass] - model._voj[network.biomass])) > 1e-6:
                     # print(f"Big M cut")
                     for comb in ki:
                         model.cbLazy(vi_biom_val <= model._vars[network.biomass] +
