@@ -131,7 +131,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     elif model._ryo[y] <= 0.2:
                         model._ryo[y] = 0.0
                     else:
-                        model._ryoj[y] = 1.0
+                        model._ryo[y] = 1.0
                 knock = [i for i,y in enumerate(model._ryo) if model._ryo[i] < 1e-6]
                 if sum(model._ryo.values()) != len(model._ryo)-k:
                     return
