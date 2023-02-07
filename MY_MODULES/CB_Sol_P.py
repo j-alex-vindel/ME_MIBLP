@@ -89,7 +89,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
 
                 # bestknownchem = cur_obj
                 
-                if model._pbnd - model._vi[network.chemical] >= 1e-6: # try with vij instead of model._vij to access the inner values, changed the value to -1e-6
+                if model._pbnd - model._vi[network.chemical] >= -1e-6: # try with vij instead of model._vij to access the inner values, changed the value to -1e-6
                     # print(f'optimality cuts pbnd - vi[chemical')
                     model.cbLazy(sum(model._varsy[j] for j in knockset) >= 1)
                 
