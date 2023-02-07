@@ -54,11 +54,11 @@ def copy_file_chname(cfile:str=None,bacteria:list=None,nfiles:int=None,t:int=Non
     
     print(f'From {source} ->')
 
-    for k in ks:
-        file = f"run_experiment_p_k{k}.py"
-        dest_file = os.path.join(dest_folder,file)
-        print(dest_file)
-        shutil.copyfile(source,dest_file)
+  
+    file = f"run_experiment_p_kn.py"
+    dest_file = os.path.join(dest_folder,file)
+    print(dest_file)
+    shutil.copyfile(source,dest_file)
 
     finsizedir = len(os.listdir(dest_folder))
 
@@ -67,8 +67,9 @@ def copy_file_chname(cfile:str=None,bacteria:list=None,nfiles:int=None,t:int=Non
 
 if __name__ == '__main__':
     # copyfile_name(names=sys.argv[1:len(sys.argv)-1],t=int(sys.argv[-1]))
-    file_to_copy = sys.argv[1]
-    to_bacteria = sys.argv[2]
-    n_copies = sys.argv[3]
-    copy_file_chname(cfile=file_to_copy,bacteria=to_bacteria,nfiles=int(n_copies))
+    file_to_copy = 'run_experiment_p_kn.py'
+    bacterias = ['iAF1260','iJO1366','iJR904']
+    n_copies = 1
+    for bacteria in bacterias:
+        copy_file_chname(cfile=file_to_copy,bacteria=bacteria,nfiles=int(n_copies))
 
