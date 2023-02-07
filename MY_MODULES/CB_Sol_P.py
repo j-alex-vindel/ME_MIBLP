@@ -60,7 +60,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
 
     def lazycall(model,where):
         if where == GRB.Callback.MIPSOL:
-            model._vo = model.cbGetSolution(model._vars)
+            model._voj = model.cbGetSolution(model._vars)
             model._yo = model.cbGetSolution(model._varsy)
             knockset =  [i for i,y in enumerate(model._yo) if model._yo[i] < 1e-6]
 
@@ -68,8 +68,8 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                 return
             cur_obj = round(model.cbGet(GRB.Callback.MIPSOL_OBJBST),6)
             cur_bd = round(model.cbGet(GRB.Callback.MIPSOL_OBJBND),6)
-            print(f"Vbio: {model._vo[network.biomass]}")
-            print(f"Vche: {model._vo[network.chemical]}")
+            print(f"Vbio: {model._voj[network.biomass]}")
+            print(f"Vche: {model._voj[network.chemical]}")
             model._vi, inner_status = inner(model._inner, model._yo)
 
 # ============================ Checking Inner Optimality Status ===================================
@@ -124,19 +124,19 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     return
                 # print(f"CB counts : {model._cbcnt}")
                 model._voj = model.cbGetNodeRel(model._vars)
-                model._ryoj = model.cbGetNodeRel(model._varsy) #  
-                for i,y in enumerate(model._ryoj):
-                    if model._ryoj[y] >= 0.8:
-                        model._ryoj[y] = 1.0
-                    elif model._ryoj[y] <= 0.2:
-                        model._ryoj[y] = 0.0
+                model._ryo = model.cbGetNodeRel(model._varsy) #  
+                for i,y in enumerate(model._ryo):
+                    if model._ryo[y] >= 0.8:
+                        model._ryo[y] = 1.0
+                    elif model._ryo[y] <= 0.2:
+                        model._ryo[y] = 0.0
                     else:
                         model._ryoj[y] = 1.0
-                knock = [i for i,y in enumerate(model._ryoj) if model._yoj[i] < 1e-6]
-                if sum(model._ryoj.values()) != len(model._ryoj)-k:
+                knock = [i for i,y in enumerate(model._ryo) if model._ryo[i] < 1e-6]
+                if sum(model._ryo.values()) != len(model._ryoj)-k:
                     return
                 else:
-                    model._vi, inner_status = inner(model._inner,model._ryoj)
+                    model._vi, inner_status = inner(model._inner,model._ryo)
                     # print(f"Optimality Code - {inner_status}")
 
                     if inner_status != GRB.OPTIMAL:
@@ -145,7 +145,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     
                     elif (model._vi[network.chemical] > model._pbnd) and (model._vi[network.chemical] > model._sv[network.chemical]): # added condition to set solution always better
                         model._sv = model._vi
-                        model._sy = model._ryoj
+                        model._sy = model._ryo
 
                         # print(f"Set Solution ")
                         # print(f"biomas {model._vi[network.biomass]:.6f}")
