@@ -7,9 +7,9 @@ def main(ks:list=None,name:str=None,sleep:int=None):
     for k in ks:
         # os.system(f"python ../A_modules/{sys.argv[1]}.py")
         print(f">> Folder {name}")
-        print(f">> Running -> ../{name}/run_experiment__pk{k}")
+        print(f">> Running -> ../{name}/run_op_pe_k{k}")
 
-        os.system(f"python ../B_{name}/run_experiment_p_k{k}.py")
+        os.system(f"python ../B_{name}/run_op_pe_k{k}.py")
         print(f'>> Resting for {sleep}')
         time.sleep(sleep)
         print(f">> Ready to start over")
@@ -50,17 +50,17 @@ def latex_tables(bacteria:str=None):
     print('Tables Writen!!!')
 
 def latex_tables_pes(bacteria:str=None):
-    fsol1 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
-    fsol2 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
-    fsol3 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
+    fsol1 = f"../Results/Methods_OP_{bacteria}.csv"
+    # fsol2 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
+    # fsol3 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
 
-        
-    s1,s2,s3 = pd.read_csv(fsol1),pd.read_csv(fsol2),pd.read_csv(fsol3)
-
-    st = pd.concat([s1,s2,s3],sort=False).round(decimals=4)
+    st =pd.read_csv(fsol1)
+    # s1,s2,s3 = pd.read_csv(fsol1),pd.read_csv(fsol2),pd.read_csv(fsol3)
+    
+    # st = pd.concat([s1,s2,s3],sort=False).round(decimals=4)
     
     # output
-    file_dir = f"../Results/Latex_tables/Pessimistic/{bacteria}.txt"
+    file_dir = f"../Results/Latex_tables/OP_{bacteria}.txt"
 
     with open(file_dir,'a') as txt:
         txt.write(f'>> Table Solution {bacteria} <<\n')
@@ -70,10 +70,14 @@ def latex_tables_pes(bacteria:str=None):
     print('Tables Writen!!!')
 
 
+
+
+
 if __name__ == '__main__':
     ks = ['n']
     names = ['iAF1260','iJO1366','iJR904']
     sleep = 5
     
     for name in names:
+        main(ks=ks,name=name,sleep=sleep)
         latex_tables_pes(bacteria=name)
