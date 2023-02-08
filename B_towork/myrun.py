@@ -49,12 +49,31 @@ def latex_tables(bacteria:str=None):
     
     print('Tables Writen!!!')
 
+def latex_tables_pes(bacteria:str=None):
+    fsol1 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
+    fsol2 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
+    fsol3 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
+
+        
+    s1,s2,s3 = pd.read_csv(fsol1),pd.read_csv(fsol2),pd.read_csv(fsol3)
+
+    st = pd.concat([s1,s2,s3],sort=False).round(decimals=4)
+    
+    # output
+    file_dir = f"../Results/Latex_tables/Pessimistic/{bacteria}.txt"
+
+    with open(file_dir,'a') as txt:
+        txt.write(f'>> Table Solution {bacteria} <<\n')
+        txt.write(st.style.to_latex())
+        txt.write(f'\n')
+        txt.write(f'\n')   
+    print('Tables Writen!!!')
+
 
 if __name__ == '__main__':
     ks = ['n']
     names = ['iAF1260','iJO1366','iJR904']
     sleep = 5
+    
     for name in names:
-        main(ks=ks,name=name,sleep=sleep)
-
-        # latex_tables(bacteria=name)
+        latex_tables_pes(bacteria=name)
