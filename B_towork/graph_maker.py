@@ -33,12 +33,12 @@ def make_plot(name:bacteria=None,choice:graphs=None):
         cp = sns.catplot(data=st, x="Chemical", y="Method", hue='K',kind='swarm',palette='flare')
         plt.savefig(f"../Results/Graphs/Chemical_{name}.png")
 
-    if 'tm' in choice:
+    if 'm' in choice:
         sns.catplot(data=st,x='K',y='Time',hue='Method',kind='bar',palette='flare')
         plt.savefig(f"../Results/Graphs/Time_bymethod_{name}.png")
 
 if __name__ =='__main__':
     bacterias = ['iJO1366','iAF1260','iJR904']
-    choice = 'tm'
+    choice = 'm'
     for bact in bacterias:
         make_plot(name=bact,choice=choice)
