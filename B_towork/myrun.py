@@ -50,7 +50,7 @@ def latex_tables(bacteria:str=None):
     print('Tables Writen!!!')
 
 def latex_tables_pes(bacteria:str=None):
-    fsol1 = f"../Results/Methods_OP_{bacteria}.csv"
+    fsol1 = f"../Results/Methods_OP2_{bacteria}.csv"
     # fsol2 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
     # fsol3 = f"../Results/Pessimistic/Methods_Kn_{bacteria}.csv"
 
@@ -60,7 +60,7 @@ def latex_tables_pes(bacteria:str=None):
     # st = pd.concat([s1,s2,s3],sort=False).round(decimals=4)
     
     # output
-    file_dir = f"../Results/Latex_tables/OP_{bacteria}.txt"
+    file_dir = f"../Results/Latex_tables/OP2_{bacteria}.txt"
 
     with open(file_dir,'a') as txt:
         txt.write(f'>> Table Solution {bacteria} <<\n')

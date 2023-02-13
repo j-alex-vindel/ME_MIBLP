@@ -33,7 +33,7 @@ r  = {
             'Strategy':[cb1_o.Strategy, cb1_p.Strategy, cb2_o.Strategy, cb2_p.Strategy, cb3_o.Strategy,cb3_p.Strategy]
 }
 
-file_name_r = f"../Results/Methods_OP_{metnet.Name}.csv"
+file_name_r = f"../Results/Methods_OP2_{metnet.Name}.csv"
 
 isfile_r = os.path.exists(file_name_r)
 
