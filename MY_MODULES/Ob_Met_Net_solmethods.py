@@ -38,6 +38,7 @@ def CB_sol_2_NOP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False
     print('Current Infeasibility:',network.infeas,sep=' -> ')
     print('KO set: ',len(network.KO), ' reactions')
     print(f"MN: {network.Name}")
+    print(f"-- Optimistic Approach --")
 
     lb = copy.deepcopy(network.LB)
     ub = copy.deepcopy(network.UB)

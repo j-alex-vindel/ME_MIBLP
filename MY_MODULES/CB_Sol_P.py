@@ -35,6 +35,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
     print('Current Infeasibility:',network.infeas,sep=' -> ')
     print('KO set: ',len(network.KO), ' reactions')
     print(f"MN: {network.Name}")
+    print(f"-- Pessimistic Approach --")
 
     lb = copy.deepcopy(network.LB)
     ub = copy.deepcopy(network.UB)
