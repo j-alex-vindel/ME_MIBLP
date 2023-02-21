@@ -109,7 +109,7 @@ class Met_Net_2:
 
     @target.setter
     def target(self,target=.5):
-        self.target = target
+        self.target = float(target)
 
     @property
     def b(self):
