@@ -179,6 +179,8 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
     imodel = gp.Model()
     fv = imodel.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='fv')
     imodel.params.LogToConsole = 0
+    
+    # Inner model Objective
     imodel.setObjective(2000*fv[network.biomass] - fv[network.chemical], GRB.MAXIMIZE)
     
     imodel.addMConstr(network.S,fv,'=',network.b,name='Stoi')

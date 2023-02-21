@@ -5,3 +5,5 @@ Results/**
 Templates/**
 B_iJO1366/*.txt
 */Data/**
+*/*.ipynb
+*/*.xlsx
