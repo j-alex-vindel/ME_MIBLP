@@ -34,8 +34,8 @@ class Metabolic_Network_2:
                  Met: Metabolites = None,
                  KO: Knockouts = None, 
                  Name: str = None, 
-                 biomass: Index = None, 
-                 chemical: Index = None, 
+                 Biomass: Index = None, 
+                 Chemical: Index = None, 
                  infeas:float = 1e-6, 
                  time_limit: int = 1000, 
                  BM: Big_M = 1000,
@@ -48,15 +48,15 @@ class Metabolic_Network_2:
         self.Met = Met
         self.KO = KO
         self.Name = Name
-        self.biomass = biomass
-        self.chemical = chemical
+        self.Biomass = Biomass
+        self.Chemical = Chemical
         self.infeas = infeas
         self.time_limit = time_limit
         self.BM = BM
         self.M = set_constructor(self.Rxn)
         self.N = set_constructor(self.Met)
         self.b = np.array([0 for i in self.N])
-        self.c = np.array([1 if i == self.biomass else 0 for i in self.M])
+        self.c = np.array([1 if i == self.Biomass else 0 for i in self.M])
         self.target = target
 
     @property
