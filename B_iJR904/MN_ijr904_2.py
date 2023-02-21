@@ -32,6 +32,10 @@ UB[Rxn.index('EX_glc__D_e')] = -10
 
 
 
-mn = Met_Net_2(S=S,LB=LB,UB=UB,Rxn=Rxn,Met=Met,Biomass=biomas,Chemical=chemical)
+mn = Met_Net_2(S=S,LB=LB,UB=UB,Rxn=Rxn,Met=Met,biomass=biomas,chemical=chemical)
 
 print(f"FBA -> {mn.FBA}")
+
+print(f"Target -> {mn.target}")
+
+print(f"Min prod -> {mn.minprod}")

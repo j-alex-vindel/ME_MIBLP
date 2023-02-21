@@ -85,7 +85,8 @@ class Met_Net_2:
         self.M = set_constructor(self.Rxn)
         self.N = set_constructor(self.Met)
         self.FBA = wildtype_FBA(self)
-
+        self.b = np.array([0 for i in self.N])
+        self.c = np.array([1 if i == self.biomass else 0 for i in self.M])
 
     @property
     def FBA(self):
@@ -111,17 +112,3 @@ class Met_Net_2:
     def target(self,target=.5):
         self.target = float(target)
 
-    @property
-    def b(self):
-        return self.b
-    @property
-    def c(self):
-        return self.c
-
-    @b.setter
-    def b(self):
-        self.b = np.array([0 for i in self.N])
-
-    @c.setter
-    def c(self):
-        self.c = np.array([1 if i == self.biomass else 0 for i in self.M])
