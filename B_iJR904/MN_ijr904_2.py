@@ -6,7 +6,7 @@ import sys
 import os
 sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'MY_MODULES')))
 
-from Ob_Met_Net import Metabolic_Network,Met_Net_2
+from Ob_Met_Net import Metabolic_Network
 from pymatreader import read_mat
 from typing import List, NewType
 from support_functions import set_constructor,wildtype_FBA
@@ -26,16 +26,14 @@ S = data[ijr904]['S']
 biomas = Rxn.index('BIOMASS_Ecoli')
 chemical = Rxn.index('EX_succ_e')
 
-LB[Rxn.index('EX_glc__D_e')] = -10
-UB[Rxn.index('EX_glc__D_e')] = -10
+# LB[Rxn.index('EX_glc__D_e')] = -10
+# UB[Rxn.index('EX_glc__D_e')] = -10
 
 
+MN = Metabolic_Network(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical)
 
+print(f"MN FBA {MN.FBA[MN.biomass]}")
 
-mn = Met_Net_2(S=S,LB=LB,UB=UB,Rxn=Rxn,Met=Met,biomass=biomas,chemical=chemical)
+print(f"MN Target -> {MN.target}")
 
-print(f"FBA -> {mn.FBA}")
-
-print(f"Target -> {mn.target}")
-
-print(f"Min prod -> {mn.minprod}")
+print(f"MN Min prod -> {MN.minprod}")
