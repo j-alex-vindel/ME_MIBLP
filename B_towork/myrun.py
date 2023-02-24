@@ -7,9 +7,9 @@ def main(ks:list=None,name:str=None,sleep:int=None):
     for k in ks:
         # os.system(f"python ../A_modules/{sys.argv[1]}.py")
         print(f">> Folder {name}")
-        print(f">> Running -> ../{name}/run_op_pe_k{k}")
+        print(f">> Running -> ../{name}/run_experiment_k{k}")
 
-        os.system(f"python ../B_{name}/run_op_pe_k{k}.py")
+        os.system(f"python ../B_{name}/run_experiment_k{k}.py")
         print(f'>> Resting for {sleep}')
         time.sleep(sleep)
         print(f">> Ready to start over")
@@ -75,9 +75,9 @@ def latex_tables_pes(bacteria:str=None):
 
 if __name__ == '__main__':
     ks = ['n']
-    names = ['iAF1260','iJO1366','iJR904']
+    names = ['iJR904']
     sleep = 5
     
     for name in names:
         main(ks=ks,name=name,sleep=sleep)
-        latex_tables_pes(bacteria=name)
+        latex_tables(bacteria=name)

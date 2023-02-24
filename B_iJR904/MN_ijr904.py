@@ -23,11 +23,14 @@ Met = data[ijr904]['mets']
 Rxn = data[ijr904]['rxns']
 S = data[ijr904]['S']
 
+# Identiying the index of the reactions, biomass and chemical of interest 
 biomas = Rxn.index('BIOMASS_Ecoli')
 chemical = Rxn.index('EX_succ_e')
 
-# LB[Rxn.index('EX_glc__D_e')] = -10
-# UB[Rxn.index('EX_glc__D_e')] = -10
+# Biological Assumptions
+
+LB[Rxn.index('EX_glc__D_e')] = -10
+UB[Rxn.index('EX_glc__D_e')] = -10
 
 UB[Rxn.index("EX_o2_e")] = -20
 LB[Rxn.index("EX_o2_e")] = -20
@@ -35,29 +38,7 @@ LB[Rxn.index("EX_o2_e")] = -20
 LB[Rxn.index("ATPM")] = 7.6
 UB[Rxn.index("ATPM")] = 7.6
 
-MN = Metabolic_Network(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical)
-print(f"Conventional Object")
-print(f"MN FBA {MN.FBA[MN.biomass]:.5}")
-
-print(f"MN Target -> {MN.target}")
-
-print(f"MN Min prod -> {MN.minprod:.5}")
-
-print(f"Alternative Object")
-
-mn  =Met_Net(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical)
-
-print(f"MN FBA {mn.FBA[MN.biomass]:.5}")
-
-print(f"MN Target -> {mn.target}")
-
-print(f"MN Min prod -> {mn.minprod:.5}")
 
 
-print(f"Changing the values from the minprod and target")
+MN_ijr904=Met_Net(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical)
 
-mn.target = .1
-
-print(f"MN Target -> {mn.target}")
-
-print(f"MN Min prod -> {mn.minprod:.5}")

@@ -9,7 +9,7 @@ from Ob_Met_Net_ijr904 import MetNet_ijr904
 import pandas as pd
 
 metnet = MetNet_ijr904
-
+metnet.target = .1
 # =========================================== K=1 ===========================
 
 m = MILP_solve_NOP(network=metnet,k=1,log=False)
