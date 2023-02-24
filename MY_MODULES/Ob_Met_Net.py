@@ -53,5 +53,54 @@ class Metabolic_Network:
         self.FBA = wildtype_FBA(self)
         self.minprod = target*self.FBA[self.biomass]
 
+class Met_Net:
+
+    def __init__(self, 
+                 S:S_Matrix = None, 
+                 LB:Lower_Bound = None, 
+                 UB:Upper_Bound = None, 
+                 Rxn: Reactions = None, 
+                 Met: Metabolites = None,
+                 KO: Knockouts = None, 
+                 Name: str = None, 
+                 biomass: Index = None, 
+                 chemical: Index = None, 
+                 infeas:float = 1e-6, 
+                 time_limit: int = 1000, 
+                 BM: Big_M = 1000):
+        
+        self.S = S
+        self.LB = LB
+        self.UB = UB
+        self.Rxn = Rxn
+        self.Met = Met
+        self.KO = KO
+        self.Name = Name
+        self.biomass = biomass
+        self.chemical = chemical
+        self.infeas = infeas
+        self.time_limit = time_limit
+        self.BM = BM
+        self.M = set_constructor(self.Rxn)
+        self.N = set_constructor(self.Met)
+        self.b = np.array([0 for i in self.N])
+        self.c = np.array([1 if i == self.biomass else 0 for i in self.M])
+        self.FBA = wildtype_FBA(self)
+        self.target = .5
+        
+    @property
+    def target(self):
+        return self._target
+
+    @target.setter
+    def target(self,value:Target=.5):
+        self._minprod = None
+        self._target = value
+    
+    @property
+    def minprod(self):
+        if self._minprod is None:
+            self._minprod = self._target*self.FBA[self.biomass]
+        return self._minprod
 
 
