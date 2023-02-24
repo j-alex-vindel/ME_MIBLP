@@ -54,6 +54,51 @@ class Metabolic_Network:
         self.minprod = target*self.FBA[self.biomass]
 
 class Met_Net:
+    """
+    A class to represent a Metabolic Network
+
+    ...
+    Attributes
+    ----------
+    S : numpy array (NxM)
+        A numpy array which contains the Stochiometric coefficients of the Metabolic Network (NxM)
+    LB : array (1xM) 
+        An array or list which contains the reactions' lower bound values of the metabolic network
+    UB : array (1xM)
+        An array or list which contains the reactions' upper bound values of the metabolic network
+    Rxn : list[str]
+        A list of strings with the names of the reactions in the Metabolic Network size (M)
+    Met : list[str]
+        A list of strings with the names of the metabolites in the Metabolic Network size (N)
+    KO : list[int]
+        A list of indeces of non essential reactions ie reactions cadidate for knockouts
+    Name : str
+        The name of the Metabolic Network, usually the name of the strain
+    biomass : int
+        The index of the biomass reaction (growth)
+    chemical : int
+        The index of the chemical of interest
+    infeas : float
+        The infeasibility parameter (default at 1e-6)
+    time_limit : int
+        A large number to account for the maximum computing time allowed inside the solver (default is 1000)
+    BigM : int
+        A large integer number for linearization and constraint construction (default is 1000)
+    target : float
+        Fraction threshold of the maximal possible biomass production rate (default to 50%)
+    minprod : float
+        Biomass threshold given by target*FBA[biomass]
+    FBA : list[float]
+        Reaction production rates under undisturbed Metabolic Network, often called widltype 
+    M : list[int]
+        Set of indeces size (M)
+    N : list[int]
+        Set of indices size (N)
+    b : list[int]
+        Array of zeroes for the rhs in Sv=b 
+    c : list[int]
+        Array of obj coeff for the wildtype
+    """
 
     def __init__(self, 
                  S:S_Matrix = None, 

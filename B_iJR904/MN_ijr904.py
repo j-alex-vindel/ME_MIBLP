@@ -49,5 +49,5 @@ knockout = [Rxn.index(i) for i in non_essentials]
 
 # Creating Object 
 
-MN_ijr904 = Met_Net(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical,Name=ijr904,)
+MN_ijr904 = Met_Net(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical,Name=ijr904,KO=knockout)
 
