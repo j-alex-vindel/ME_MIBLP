@@ -38,7 +38,16 @@ LB[Rxn.index("EX_o2_e")] = -20
 LB[Rxn.index("ATPM")] = 7.6
 UB[Rxn.index("ATPM")] = 7.6
 
+# Defining non essentials and KO reactions
+
+non_essentials = ['HEX1', 'PGI', 'PFK', 'FBA', 'TPI', 'GAPD','PGK', 'PGM', 'ENO', 'PYK',
+'LDH_D', 'PFL','PTAr', 'ACKr','G6PDH2r', 'PGL', 'GND', 'RPI', 'RPE', 'TKT1', 'TALA', 'TKT2', 'FUM',
+'FRD2', 'SUCOAS', 'AKGDH','ICDHyr', 'CS', 'MDH','MDH2', 'MDH3', 'ACALD']
+
+knockout = [Rxn.index(i) for i in non_essentials]
 
 
-MN_ijr904=Met_Net(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical)
+# Creating Object 
+
+MN_ijr904 = Met_Net(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical,Name=ijr904,)
 

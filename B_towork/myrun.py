@@ -74,7 +74,7 @@ def latex_tables_pes(bacteria:str=None):
 
 
 if __name__ == '__main__':
-    ks = ['n']
+    ks = [1,2,3]
     names = ['iJR904']
     sleep = 5
     
