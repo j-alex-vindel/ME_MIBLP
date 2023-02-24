@@ -4,11 +4,13 @@ import os
 sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'MY_MODULES'))) 
 
 from CB_Sol_P import CB_P
-from Ob_Met_Net_ijr904 import MetNet_ijr904
+from MN_ijr904 import MN_ijr904
 
 import pandas as pd
 
-metnet = MetNet_ijr904
+metnet = MN_ijr904
+metnet.target = .1
+
 K = 1
 
 cb1 = CB_P(network=metnet,k=K,log=True)
