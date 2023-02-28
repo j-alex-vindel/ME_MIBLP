@@ -90,6 +90,9 @@ class Met_Net:
         Biomass threshold given by target*FBA[biomass]
     FBA : list[float]
         Reaction production rates under undisturbed Metabolic Network, often called widltype 
+    FVA : list[float]
+        Reaction production rate under undisturbed Metabolic Network, where the f.o. is the chemical of interest.
+        And, the biomass reaction has a minprod threshold
     M : list[int]
         Set of indeces size (M)
     N : list[int]
@@ -99,7 +102,6 @@ class Met_Net:
     c : list[int]
         Array of obj coeff for the wildtype
     """
-
     def __init__(self, 
                  S:S_Matrix = None, 
                  LB:Lower_Bound = None, 
@@ -130,7 +132,6 @@ class Met_Net:
         self.N = set_constructor(self.Met)
         self.b = np.array([0 for i in self.N])
         self.c = np.array([1 if i == self.biomass else 0 for i in self.M])
-        self.FBA = wildtype_FBA(self)
         self.target = .5
         
     @property
@@ -140,6 +141,8 @@ class Met_Net:
     @target.setter
     def target(self,value:Target=.5):
         self._minprod = None
+        self._FBA = None
+        self._FVA = None
         self._target = value
     
     @property
@@ -148,4 +151,13 @@ class Met_Net:
             self._minprod = self._target*self.FBA[self.biomass]
         return self._minprod
 
-
+    @property
+    def FBA(self):
+        if self._FBA is None:
+            self._FBA = wildtype_FBA(self)
+        return self._FBA
+    @property
+    def FVA(self):
+        if self._FVA is None:
+            self._FVA = wildtype_FBA(self,wildtype=False,mutant=True)
+        return self._FVA
