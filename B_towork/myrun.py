@@ -3,13 +3,13 @@ import sys
 import time
 import pandas as pd
 
-def main(ks:list=None,name:str=None,sleep:int=None):
+def main(ks:list=None,name:str=None,sleep:int=None,file:str=None):
     for k in ks:
         # os.system(f"python ../A_modules/{sys.argv[1]}.py")
         print(f">> Folder {name}")
-        print(f">> Running -> ../{name}/run_op_pe_k{k}")
+        print(f">> Running -> ../{name}/{file}")
 
-        os.system(f"python ../B_{name}/run_op_pe_k{k}.py")
+        os.system(f"python ../B_{name}/{file}.py")
         print(f'>> Resting for {sleep}')
         time.sleep(sleep)
         print(f">> Ready to start over")
@@ -71,13 +71,11 @@ def latex_tables_pes(bacteria:str=None):
 
 
 
-
-
 if __name__ == '__main__':
     ks = ['n']
-    names = ['iJR904']
+    names = ['iJR904','iJO1366','iAF1260']
     sleep = 5
-    
+    file = f"O_MILP_CB_kn"
     for name in names:
-        main(ks=ks,name=name,sleep=sleep)
-        latex_tables_pes(bacteria=name)
+        main(ks=ks,name=name,sleep=sleep,file=file)
+        

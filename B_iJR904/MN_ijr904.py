@@ -6,9 +6,8 @@ import sys
 import os
 sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'MY_MODULES')))
 
-from Ob_Met_Net import Metabolic_Network,Met_Net
+from Ob_Met_Net import Met_Net
 from pymatreader import read_mat
-from typing import List, NewType
 from support_functions import set_constructor,wildtype_FBA
 import numpy as np
 

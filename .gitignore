@@ -2,9 +2,10 @@ A_modules/**
 B_towork/qt.ipynb
 B_towork/test_k.py
 Results/**
-Templates/**
 B_iJO1366/*.txt
 */Data/**
 */*.ipynb
 */*.xlsx
-B_iJR904/run_experiment_p_k3.py
+*/run_experiment_k1.py
+*/run_experiment_k2.py
+*/run_experiment_k3.py

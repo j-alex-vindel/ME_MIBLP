@@ -3,16 +3,16 @@ from gurobipy import GRB
 from typing import List, Type, NewType
 from collections import namedtuple
 import copy
-from Ob_Met_Net import Metabolic_Network
+from Ob_Met_Net import Met_Net
 from itertools import combinations
 import math 
 
-M_Network = Type[Metabolic_Network]
+M_Network = Type[Met_Net]
 Ks = NewType('K Strategies',int)
 Vector = List[int]
 Inner_obj = NewType('Inner Objective',str)
-Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype'])
-Result = namedtuple('Result',['MetNet','Strategy','Ys','Vs','Time','Soltype'])
+Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
+Result = namedtuple('Result',['MetNet','Strategy','Ys','Vs','Time','Soltype','Method'])
 Result_inner = namedtuple('Result_IC',['Biomass','Chemical','Soltype'])
 Pareto_point = namedtuple('P_point',['Biomass','Chemical'])
 
@@ -33,12 +33,12 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
     cb.Soltype   = Type of solution [optimal, timelimit , infeasible]
 
     '''
-    print(f'**** Solving Callbacks k={k} ****')
+    print(f'\n **** Solving Callbacks k={k} ****')
     print(f'# Variables (reactions in the network): {len(network.M)}')
     print('Current Infeasibility:',network.infeas,sep=' -> ')
     print('KO set: ',len(network.KO), ' reactions')
     print(f"MN: {network.Name}")
-    print(f"-- Optimistic Approach --")
+    print(f"-- Optimistic Approach -- \n")
 
     lb = copy.deepcopy(network.LB)
     ub = copy.deepcopy(network.UB)
@@ -226,18 +226,18 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
         del_strat_cb = ['all']
         soltype = 'Infeasible'
 
-    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype)
+    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'CB')
 
 def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result:
     '''
     MILP_solve(network=network,k=k)
         return Result[MetNet,Strategy,Flows,Time,Soltype]
     '''
-    print(f'**** Solving ReacKnock k={k} ****')
+    print(f'\n **** Solving ReacKnock k={k} ****')
     print(f'# Variables (reactions in the network): {len(network.M)}')
     print('Current Infeasibility:',network.infeas,sep=' -> ')
     print('KO set: ',len(network.KO), ' reactions')
-    print(f"MN: {network.Name}")
+    print(f"MN: {network.Name}\n")
 
     lb = copy.deepcopy(network.LB)
     lb[network.biomass] = network.minprod
@@ -341,9 +341,9 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
         # print('Biomass:',vs[network.biomass],sep=' ^ ')
         del_strat = 'all'
 
-    print('*'*4,' FINISHED!!! ','*'*4)
+    # print('*'*4,' FINISHED!!! ','*'*4)
 
-    return  Result(network.Name,del_strat,ys, vs, s,soltype)
+    return  Result(network.Name,del_strat,ys, vs, s,soltype,'MILP')
 
 def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result_milp:Result=None,criteria:str='both',milp:bool=False,cb:bool=False,objective:Inner_obj=None,log:bool=True) -> Result_inner:
 

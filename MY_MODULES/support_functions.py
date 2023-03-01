@@ -1,14 +1,19 @@
 import gurobipy as gp
 from gurobipy import GRB
-from typing import List,NewType
+from typing import List,NewType,Type
 import copy
 import pandas as pd
+from dict2xml import dict2xml
+from collections import namedtuple
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
 
 FBA = NewType('FBA_vector',List[float])
-
-class CompError(Exception):
-    pass
-
+Result = namedtuple('Result',['MetNet','Strategy','Ys','Vs','Time','Soltype','Method'])
+Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
+RM = Type[Result]
+RC = Type[Result_cb]
 
 
 def set_constructor(list:List[str])->List[int]:
@@ -26,7 +31,7 @@ def wildtype_FBA(obj, wildtype:bool=True,mutant:bool=False)->FBA:
         objective = obj.chemical
         FVA = True
     else:
-        raise CompError("Both values of wildtype and mutant can't be both True or False at the same Time, pick one or the other")
+        raise Exception("Both values of wildtype and mutant can't be both True or False at the same Time, pick one or the other")
         
 
     wt = gp.Model()
@@ -96,3 +101,65 @@ def maketables(name:str=None):
     print(table3.to_string())
     print('===============================')
     
+
+def save_results(c:RC=None,m:RM=None):
+    if c is None and m is None:
+        return f"Nothing to save"
+    elif c != None and m is None:
+        file = f"../Results/XML/OP{c.Method}_{c.MetNet}_k{len(c.Strategy)}.xml"
+        xml = dict2xml(dict(c._asdict()),wrap='root',indent="   ")
+
+    elif m != None and c is None:
+        file = f"../Results/XML/OP{m.Method}_{m.MetNet}_k{len(m.Strategy)}.xml"
+        xml = dict2xml(dict(m._asdict()),wrap='root',indent="   ")
+    else:
+        return f"cannot handle two sol at the same time"
+
+    is_file = os.path.exists(file)
+
+    if not is_file:
+        with open(file,'w+') as f:
+            f.write(xml)
+
+    return f" Solution saved!"
+
+def do_them_graphs(obj,df):
+    timeplot = f"../Results/Graphs/Time_bar_{obj.Name}_OP.png"
+    bioplot = f"../Results/Graphs/Biomass_{obj.Name}_OP.png"
+    chemplot = f"../Results/Graphs/Chemical_{obj.Name}_OP.png"
+    metplot = f"../Results/Graphs/Time_bymethod_{obj.Name}_OP.png"
+    timeline = f"../Results/Graphs/Time_line_{obj.Name}_OP.png"
+
+
+    is_time_linegraph = os.path.exists(timeline)
+
+    is_time_bargraph = os.path.exists(timeplot)
+
+    is_bioplot = os.path.exists(bioplot)
+
+    is_chemplot = os.path.exists(chemplot)
+
+    is_metplot = os.path.exists(metplot)
+
+    if not is_time_linegraph:
+
+        sns.catplot(x='Method',y='Time',hue='K',kind='point',data=df,palette='flare',linestyles=['dashed','dotted','dashdot'],markers=['^','o','s'])
+        plt.savefig(timeline)
+
+    if not is_time_bargraph:
+        sns.catplot(data=df,x='Method',y='Time',hue='K',kind='bar',palette='flare')
+        plt.savefig(timeplot)
+
+    if not is_bioplot:
+        bp = sns.catplot(data=df, x="Biomass", y="Method", hue='K',kind='swarm',palette='flare')
+        plt.savefig(bioplot)
+
+    if not is_chemplot:
+        cp = sns.catplot(data=df, x="Chemical", y="Method", hue='K',kind='swarm',palette='flare')
+        plt.savefig(chemplot)
+
+    if not is_metplot:  
+            sns.catplot(data=df,x='K',y='Time',hue='Method',kind='bar',palette='flare')
+            plt.savefig(metplot)
+
+    return f" Graphs completed!"
