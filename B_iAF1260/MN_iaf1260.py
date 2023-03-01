@@ -44,18 +44,4 @@ knockout = [rxn.index(i) for i in non_essentials]
 # =========== Metabolic Network Object ====================
 
 MN_iaf1260 = Met_Net(S=S,LB=LB,UB=UB,Rxn=rxn,Met=met,Name=iaf1260,KO=knockout,biomass= biomas, chemical=chemical)
-MN_iaf1260.target=.1
 
-print(f"FBA Values: \n")
-print(f"Biomass: {MN_iaf1260.FBA[MN_iaf1260.biomass]:.5}")
-print(f"Chemical: {MN_iaf1260.FBA[MN_iaf1260.chemical]:.5} \n")
-print(f"\n")
-print(f"FVA Values: \n -> with biomass threshold = {MN_iaf1260.minprod:.5} ({MN_iaf1260.target*100}%)")
-print(f"Biomass: {MN_iaf1260.FVA[MN_iaf1260.biomass]:.5}")
-print(f"Chemical: {MN_iaf1260.FVA[MN_iaf1260.chemical]:.5}")
-
-# MN_iaf1260.target = .1
-
-# print(f"FVA Values: \n -> with biomass threshold = {MN_iaf1260.minprod:.5} ({MN_iaf1260.target*100}%)")
-# print(f"Biomass: {MN_iaf1260.FVA[MN_iaf1260.biomass]:.5}")
-# print(f"Chemical: {MN_iaf1260.FVA[MN_iaf1260.chemical]:.5}")

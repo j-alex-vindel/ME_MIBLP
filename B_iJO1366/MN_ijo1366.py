@@ -48,20 +48,9 @@ non_essentials = ['GLCabcpp', 'GLCptspp', 'HEX1', 'PGI', 'PFK', 'FBA', 'TPI', 'G
 
 knockout = [rxn.index(i) for i in non_essentials]
 
+
 # =========== Metabolic Network Object ====================
 
 MN_ijo1366 = Met_Net(S=S,LB=LB,UB=UB,Rxn=rxn,Met=met,Name=ijo1366,KO=knockout,biomass= biomas, chemical=chemical)
 
-print(f"FBA Values: \n")
-print(f"Biomass: {MN_ijo1366.FBA[MN_ijo1366.biomass]:.5}")
-print(f"Chemical: {MN_ijo1366.FBA[MN_ijo1366.chemical]:.5} \n")
-print(f"\n")
-print(f"FVA Values: \n -> with biomass threshold = {MN_ijo1366.minprod:.5} ({MN_ijo1366.target*100}%)")
-print(f"Biomass: {MN_ijo1366.FVA[MN_ijo1366.biomass]:.5}")
-print(f"Chemical: {MN_ijo1366.FVA[MN_ijo1366.chemical]:.5}")
 
-MN_ijo1366.target = .2
-
-print(f"FVA Values: \n -> with biomass threshold = {MN_ijo1366.minprod:.5} ({MN_ijo1366.target*100}%)")
-print(f"Biomass: {MN_ijo1366.FVA[MN_ijo1366.biomass]:.5}")
-print(f"Chemical: {MN_ijo1366.FVA[MN_ijo1366.chemical]:.5}")
