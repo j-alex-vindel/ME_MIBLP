@@ -20,7 +20,7 @@ Pareto_point = namedtuple('P_point',['Biomass','Chemical'])
 
 # ================================================ NO Presolve ==================================================================================
 
-def CB_sol_2_NOP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result_cb:
+def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result_cb:
     '''
     cb = CB_solve_2_NOP(network=network,k=k,log=True,speed=False,threads=False)
         returns the bilevel optimistic solution as a named tupple 
@@ -228,7 +228,7 @@ def CB_sol_2_NOP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False
 
     return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype)
 
-def MILP_solve_NOP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result:
+def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result:
     '''
     MILP_solve(network=network,k=k)
         return Result[MetNet,Strategy,Flows,Time,Soltype]

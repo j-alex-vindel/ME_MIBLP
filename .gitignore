@@ -7,3 +7,9 @@ B_iJO1366/*.txt
 */Data/**
 */*.ipynb
 */*.xlsx
+*/run_experiment_k1.py
+*/run_experiment_k2.py
+*/run_experiment_k3.py
+*/run_experiment_p_k1.py
+*/run_experiment_p_k2.py
+*/run_experiment_p_k3.py
