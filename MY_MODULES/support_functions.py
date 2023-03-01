@@ -7,13 +7,38 @@ from dict2xml import dict2xml
 from collections import namedtuple
 import matplotlib.pyplot as plt
 import seaborn as sns
+from bs4 import BeautifulSoup
 import os
 
 FBA = NewType('FBA_vector',List[float])
 Result = namedtuple('Result',['MetNet','Strategy','Ys','Vs','Time','Soltype','Method'])
 Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
+R_xml = namedtuple('Result_xml',['MetNet','Strategy','Ys','Vs','Time','Method','K'])
 RM = Type[Result]
 RC = Type[Result_cb]
+
+
+def result_parser(file):
+    k = int(file[-5])
+    with open(file) as f:
+        data = f.read()
+
+    soup = BeautifulSoup(data,"xml")
+
+    vs = [float(flows.text) for flows in soup.find_all('Vs')]
+    ys = [float(Bi.text) for Bi in soup.find_all('Ys')]
+    time = float(soup.find('Time').text)
+    
+    if k ==1:
+        strategy = [soup.find('Strategy')]
+    else:
+        strategy = [strat.text for strat in soup.find_all("Strategy")]
+
+    method = soup.find('Method').text
+    microbe = soup.find('MetNet').text
+
+    return R_xml(microbe,strategy,ys,vs,time,method,k)
+
 
 
 def set_constructor(list:List[str])->List[int]:
