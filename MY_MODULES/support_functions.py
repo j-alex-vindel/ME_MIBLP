@@ -20,7 +20,7 @@ RC = Type[Result_cb]
 
 def result_parser(file):
     k = int(file[-5])
-    with open(file) as f:
+    with open(file,'r') as f:
         data = f.read()
 
     soup = BeautifulSoup(data,"xml")
@@ -38,7 +38,6 @@ def result_parser(file):
     microbe = soup.find('MetNet').text
 
     return R_xml(microbe,strategy,ys,vs,time,method,k)
-
 
 
 def set_constructor(list:List[str])->List[int]:
@@ -131,11 +130,11 @@ def save_results(c:RC=None,m:RM=None):
     if c is None and m is None:
         return f"Nothing to save"
     elif c != None and m is None:
-        file = f"../Results/XML/OP{c.Method}_{c.MetNet}_k{len(c.Strategy)}.xml"
+        file = f"../Results/XML/PE{c.Method}_{c.MetNet}_k{len(c.Strategy)}.xml"
         xml = dict2xml(dict(c._asdict()),wrap='root',indent="   ")
 
     elif m != None and c is None:
-        file = f"../Results/XML/OP{m.Method}_{m.MetNet}_k{len(m.Strategy)}.xml"
+        file = f"../Results/XML/PE{m.Method}_{m.MetNet}_k{len(m.Strategy)}.xml"
         xml = dict2xml(dict(m._asdict()),wrap='root',indent="   ")
     else:
         return f"cannot handle two sol at the same time"
@@ -149,11 +148,11 @@ def save_results(c:RC=None,m:RM=None):
     return f" Solution saved!"
 
 def do_them_graphs(obj,df):
-    timeplot = f"../Results/Graphs/Time_bar_{obj.Name}_OP.png"
-    bioplot = f"../Results/Graphs/Biomass_{obj.Name}_OP.png"
-    chemplot = f"../Results/Graphs/Chemical_{obj.Name}_OP.png"
-    metplot = f"../Results/Graphs/Time_bymethod_{obj.Name}_OP.png"
-    timeline = f"../Results/Graphs/Time_line_{obj.Name}_OP.png"
+    timeplot = f"../Results/Graphs/PE_Time_bar_{obj.Name}_OP.png"
+    bioplot = f"../Results/Graphs/PE_Biomass_{obj.Name}_OP.png"
+    chemplot = f"../Results/Graphs/PE_Chemical_{obj.Name}_OP.png"
+    metplot = f"../Results/Graphs/PE_Time_bymethod_{obj.Name}_OP.png"
+    timeline = f"../Results/Graphs/PE_Time_line_{obj.Name}_OP.png"
 
 
     is_time_linegraph = os.path.exists(timeline)

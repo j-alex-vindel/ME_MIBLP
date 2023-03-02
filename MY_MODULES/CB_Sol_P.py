@@ -11,7 +11,7 @@ M_Network = Type[Metabolic_Network]
 Ks = NewType('K Strategies',int)
 Vector = List[int]
 Inner_obj = NewType('Inner Objective',str)
-Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype'])
+Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
 Result = namedtuple('Result',['MetNet','Strategy','Ys','Vs','Time','Soltype'])
 Result_inner = namedtuple('Result_IC',['Biomass','Chemical','Soltype'])
 Pareto_point = namedtuple('P_point',['Biomass','Chemical'])
@@ -231,4 +231,4 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         del_strat_cb = ['all']
         soltype = 'Infeasible'
 
-    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype)
+    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'PECB')
