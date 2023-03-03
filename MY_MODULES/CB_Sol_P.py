@@ -231,4 +231,4 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         del_strat_cb = ['all']
         soltype = 'Infeasible'
 
-    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'PECB')
+    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'CBP')

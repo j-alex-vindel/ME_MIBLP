@@ -130,11 +130,11 @@ def save_results(c:RC=None,m:RM=None):
     if c is None and m is None:
         return f"Nothing to save"
     elif c != None and m is None:
-        file = f"../Results/XML/PE{c.Method}_{c.MetNet}_k{len(c.Strategy)}.xml"
+        file = f"../Results/XML/{c.Method}_{c.MetNet}_k{len(c.Strategy)}.xml"
         xml = dict2xml(dict(c._asdict()),wrap='root',indent="   ")
 
     elif m != None and c is None:
-        file = f"../Results/XML/PE{m.Method}_{m.MetNet}_k{len(m.Strategy)}.xml"
+        file = f"../Results/XML/{m.Method}_{m.MetNet}_k{len(m.Strategy)}.xml"
         xml = dict2xml(dict(m._asdict()),wrap='root',indent="   ")
     else:
         return f"cannot handle two sol at the same time"

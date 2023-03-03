@@ -226,7 +226,7 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
         del_strat_cb = ['all']
         soltype = 'Infeasible'
 
-    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'OPCB')
+    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'CBO')
 
 def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result:
     '''
@@ -343,7 +343,7 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
 
     # print('*'*4,' FINISHED!!! ','*'*4)
 
-    return  Result(network.Name,del_strat,ys, vs, s,soltype,'OPMILP')
+    return  Result(network.Name,del_strat,ys, vs, s,soltype,'MILPO')
 
 def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result_milp:Result=None,criteria:str='both',milp:bool=False,cb:bool=False,objective:Inner_obj=None,log:bool=True) -> Result_inner:
 
