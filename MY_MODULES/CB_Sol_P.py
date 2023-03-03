@@ -12,15 +12,12 @@ Ks = NewType('K Strategies',int)
 Vector = List[int]
 Inner_obj = NewType('Inner Objective',str)
 Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
-Result = namedtuple('Result',['MetNet','Strategy','Ys','Vs','Time','Soltype'])
-Result_inner = namedtuple('Result_IC',['Biomass','Chemical','Soltype'])
-Pareto_point = namedtuple('P_point',['Biomass','Chemical'])
 
 
 def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,threads:bool=False) -> Result_cb:
     '''
         cb = CB_solve_2_NOP(network=network,k=k,log=True,speed=False,threads=False)
-            returns the bilevel pesimistic solution as a named tupple 
+           
         cb.MetNet    = Metabolic Network's name
         cb.Stragtegy = List of rxn to knockout
         cb.Ys        = Binary solution as a vector
@@ -28,6 +25,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         cb.Vij       = Flows in the inner problem
         cb.Time      = Solving time 
         cb.Soltype   = Type of solution [optimal, timelimit , infeasible]
+        cb.Method    = Solving Method - set to CBP (Callbacks-Pessimistic)
 
         '''
     print(f'**** Solving Callbacks k={k} ****')

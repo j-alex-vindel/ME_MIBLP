@@ -23,7 +23,7 @@ Pareto_point = namedtuple('P_point',['Biomass','Chemical'])
 def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result_cb:
     '''
     cb = CB_solve_2_NOP(network=network,k=k,log=True,speed=False,threads=False)
-        returns the bilevel optimistic solution as a named tupple 
+        
     cb.MetNet    = Metabolic Network's name
     cb.Stragtegy = List of rxn to knockout
     cb.Ys        = Binary solution as a vector
@@ -31,6 +31,7 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
     cb.Vij       = Flows in the inner problem
     cb.Time      = Solving time 
     cb.Soltype   = Type of solution [optimal, timelimit , infeasible]
+    cb.Method    = Solving Method - set to CBO (Callbacks-Optimistic)
 
     '''
     print(f'\n **** Solving Callbacks k={k} ****')
@@ -230,8 +231,16 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
 
 def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result:
     '''
-    MILP_solve(network=network,k=k)
-        return Result[MetNet,Strategy,Flows,Time,Soltype]
+    m = MILP_solve(network=network,k=k)
+       
+    m.MetNet    = Metabolic Network's name
+    m.Stragtegy = List of rxn to knockout
+    m.Ys        = Binary solution as a vector
+    m.Vs        = Optimal bilevel flows
+    m.Vij       = Flows in the inner problem
+    m.Time      = Solving time 
+    m.Soltype   = Type of solution [optimal, timelimit , infeasible]
+    m.Method    = Solving Method - set to CBO (Callbacks-Optimistic)
     '''
     print(f'\n **** Solving ReacKnock k={k} ****')
     print(f'# Variables (reactions in the network): {len(network.M)}')
