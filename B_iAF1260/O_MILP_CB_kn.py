@@ -25,14 +25,16 @@ c3 = CB_sol_OP(network=metnet,k=K+2,log=False)
 m3 = MILP_sol_OP(network=metnet,k=K+2,log=False)
 
 
-results = [c1,c2,c3,m1,m2,m3]
+rc,rm = [c1,c2,c3],[m1,m2,m3]
 
-for result in results:
-    save_results(result)
+for result in rc:
+    save_results(c=result)
+for result in rm:
+    save_results(m=result)
 
 # --------------- Compile Results ----------------------------------------------------------
 r  = {
-            'Method':['MILP','CB','MILP','CB','MILP','CB'],
+            'Method':[m1.Method,c1.Method,m2.Method,c2.Method,m3.Method,c3.Method],
             'Biomass':[m1.Vs[metnet.biomass],c1.Vs[metnet.biomass],m2.Vs[metnet.biomass],c2.Vs[metnet.biomass],m3.Vs[metnet.biomass],c3.Vs[metnet.biomass]],
             'Chemical':[m1.Vs[metnet.chemical],c1.Vs[metnet.chemical],m2.Vs[metnet.chemical],c2.Vs[metnet.chemical],m3.Vs[metnet.chemical],c3.Vs[metnet.chemical]],
             'Time':[m1.Time,c1.Time,m2.Time,c2.Time,m3.Time,c3.Time],
@@ -52,7 +54,7 @@ if not isfile_r:
     rdf.to_csv(file_name_r)
 
 # -----------------  Graphs ---------------------------------------------------------------- 
-do_them_graphs(metnet,rdf)
+do_them_graphs(metnet,rdf,'Opt')
 
 
 

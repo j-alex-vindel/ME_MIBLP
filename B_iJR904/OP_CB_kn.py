@@ -36,13 +36,14 @@ for result in resultsmi:
 
 # --------------- Compile Results ----------------------------------------------------------
 r  = {
-            'Aproach':['Pes','Opt','Pes','Opt','Pes','Opt'],
+            'Method':[m1.Method,c1.Method,m2.Method,c2.Method,m3.Method,c3.Method],
             'Biomass':[m1.Vs[metnet.biomass],c1.Vs[metnet.biomass],m2.Vs[metnet.biomass],c2.Vs[metnet.biomass],m3.Vs[metnet.biomass],c3.Vs[metnet.biomass]],
             'Chemical':[m1.Vs[metnet.chemical],c1.Vs[metnet.chemical],m2.Vs[metnet.chemical],c2.Vs[metnet.chemical],m3.Vs[metnet.chemical],c3.Vs[metnet.chemical]],
             'Time':[m1.Time,c1.Time,m2.Time,c2.Time,m3.Time,c3.Time],
             'Strategy':[m1.Strategy,c1.Strategy,m2.Strategy,c2.Strategy,m3.Strategy,c3.Strategy],
             'K':[len(m1.Strategy),len(c1.Strategy),len(m2.Strategy),len(c2.Strategy),len(m3.Strategy),len(c3.Strategy)]
 }
+
 
 rdf = pd.DataFrame.from_dict(r)
 rdf.round(decimals=5)
@@ -56,7 +57,7 @@ if not isfile_r:
     rdf.to_csv(file_name_r)
 
 # -----------------  Graphs ---------------------------------------------------------------- 
-do_them_graphs(metnet,rdf)
+do_them_graphs(metnet,rdf,'Pes')
 
 
 

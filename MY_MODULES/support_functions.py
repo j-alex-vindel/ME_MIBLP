@@ -147,12 +147,12 @@ def save_results(c:RC=None,m:RM=None):
 
     return f" Solution saved!"
 
-def do_them_graphs(obj,df):
-    timeplot = f"../Results/Graphs/PE_Time_bar_{obj.Name}_OP.png"
-    bioplot = f"../Results/Graphs/PE_Biomass_{obj.Name}_OP.png"
-    chemplot = f"../Results/Graphs/PE_Chemical_{obj.Name}_OP.png"
-    metplot = f"../Results/Graphs/PE_Time_bymethod_{obj.Name}_OP.png"
-    timeline = f"../Results/Graphs/PE_Time_line_{obj.Name}_OP.png"
+def do_them_graphs(obj,df,aproach):
+    timeplot = f"../Results/Graphs/{aproach}_Time_bar_{obj.Name}.png"
+    bioplot = f"../Results/Graphs/{aproach}_Biomass_{obj.Name}.png"
+    chemplot = f"../Results/Graphs/{aproach}_Chemical_{obj.Name}.png"
+    metplot = f"../Results/Graphs/{aproach}_Time_bymethod_{obj.Name}.png"
+    timeline = f"../Results/Graphs/{aproach}_Time_line_{obj.Name}.png"
 
 
     is_time_linegraph = os.path.exists(timeline)
