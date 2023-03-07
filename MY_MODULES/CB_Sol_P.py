@@ -295,7 +295,8 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
             print(f"Objective = {cur_obj}")
             print(f"Best Bound = {cur_bd}")
             print(f"Curnt Pbnd = {model._pbnd}")
-            print(f"Viche: {model._vi[network.chemical]}\n")
+            print(f"Viche: {model._vi[network.chemical]}")
+            print(f"Algorithm response: \n")
             if inner_status != GRB.OPTIMAL:
                 print(f"{' '*3}feasibility cuts inner not optinal MIPSOL")
                 model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
@@ -356,24 +357,30 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
                 else:
                     model._vi, inner_status = inner(model._inner,model._ryo)
                     # print(f"Optimality Code - {inner_status}")
-                    print(f"Viche: {model._vi[network.chemical]:.6}\n")
-
+                    print(f"Viche: {model._vi[network.chemical]:.6}")
+                    print(f"Algorithm response: \n")
                     if inner_status != GRB.OPTIMAL:
-                        # print('Optimality cuts - inner not optimal')
+                        print(f"{' '*3}Optimality cuts - inner not optimal")
                         model.cbCut(sum([model._varsy[f] for f in knock]) >= 1)
                     
+                    # elif model._pbnd < model._vi[network.chemical]:
+                    #     print(f"{model._vi[network.chemical]:.6} >= vchem - {mipbnd}*(sum{['y[%d]'%g for g in knock]})")
+                    #     print(f"Update: pbdn = {model._vi[network.chemical]:.6}")
+                    #     model.cbLazy(model._vi[network.chemical] >= model._vars[network.chemical] - mipbnd*(sum(model._varsy[i] for i in knock)))
+                    #     model._pbnd = model._vi[network.chemical]
+
                     elif (model._vi[network.chemical] > model._pbnd) and (model._vi[network.chemical] > model._sv[network.chemical]): # added condition to set solution always better
                         model._sv = model._vi
                         model._sy = model._ryo
 
-                        # print(f"Set Solution ")
+                        print(f"{' '*3} Set Solution ")
                         # print(f"biomas {model._vi[network.biomass]:.6f}")
                         # print(f"chemical {model._vi[network.chemical]:.6f}")
                         model.cbSetSolution(model._vars, model._sv)
                         model.cbSetSolution(model._varsy, model._sy)
                     
                     else:
-                        # print(f"Optimality cuts - vi not larger or equal than pnbd")
+                        print(f"{' '*3}Optimality cuts - vi not larger or equal than pnbd")
                         model.cbCut(sum([model._varsy[f] for f in knock]) >= 1)
     
     m = gp.Model()
@@ -444,8 +451,8 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
         soltype = 'Time_Limit'
 
     elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
-        ys = ['all' for i in network.M]
-        vs = ['~' for i in network.M]
+        ys = [0 for i in network.M]
+        vs = [2000 for i in network.M]
         del_strat_cb = ['all']
         soltype = 'Infeasible'
 
