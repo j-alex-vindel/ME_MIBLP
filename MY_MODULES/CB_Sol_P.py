@@ -307,9 +307,11 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
 
                 # bestknownchem = cur_obj
                 
-                if model._pbnd < vi_chem_val: # try with vij instead of model._vij to access the inner values, changed the value to -1e-6
+                if model._pbnd < vi_chem_val: 
                     print(f"{' '*3}Optimality cuts, pbnd < vi[chemical]")
-                    model.cbLazy(vi_chem_val >= model._vars[network.chemical] + cur_obj*(sum(model._varsy[i] for i in knockset)))
+                    print(f"{vi_chem_val} >= vchem - {cur_obj}*(sum{['y[%d]'%g for g in knockset]})")
+                    print(f"Update: pbdn = {vi_chem_val}")
+                    model.cbLazy(vi_chem_val >= model._vars[network.chemical] - cur_obj*(sum(model._varsy[i] for i in knockset)))
                     model._pbnd = vi_chem_val
                 
                 elif model._pbnd > vi_chem_val:
@@ -334,7 +336,7 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
                 print(f"Bnd= {mipbnd}")
                 # print(f"Curnt set solution v: {model._sv[network.chemical]:.6f}")
                 # print(f"Curnt set solution len y: {len(model._sy)}")
-                print(f"Curnt PBND: {model._pbnd} \n")
+                print(f"Curnt PBND: {model._pbnd}")
                 model._cbcnt += 1
                 if model._cbcnt % 10 == 0:
                     return
@@ -354,6 +356,7 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
                 else:
                     model._vi, inner_status = inner(model._inner,model._ryo)
                     # print(f"Optimality Code - {inner_status}")
+                    print(f"Viche: {model._vi[network.chemical]:.6}\n")
 
                     if inner_status != GRB.OPTIMAL:
                         # print('Optimality cuts - inner not optimal')
