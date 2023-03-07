@@ -13,7 +13,7 @@ Vector = List[int]
 Inner_obj = NewType('Inner Objective',str)
 Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
 Result = namedtuple('Result',['MetNet','Strategy','Ys','Vs','Time','Soltype','Method'])
-Result_inner = namedtuple('Result_IC',['Biomass','Chemical','Soltype'])
+Result_inner = namedtuple('Result_IC',['Biomass','Chemical','Soltype','From','Criteria','OF'])
 Pareto_point = namedtuple('P_point',['Biomass','Chemical'])
 
 
@@ -22,6 +22,14 @@ Pareto_point = namedtuple('P_point',['Biomass','Chemical'])
 
 def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result_cb:
     '''
+    --------- Input -------------------------
+    network      = Metabolic Network, default value None
+    k            = Number of reactions to knockout, set to None
+    log          = Option to show the log from the computation, set to True
+    speed        = Option to try to decrease the computation time set to False
+    threads      = Option to try to increase the number of available threads 
+
+    --------- OutPut ------------------------
     cb = CB_solve_2_NOP(network=network,k=k,log=True,speed=False,threads=False)
         
     cb.MetNet    = Metabolic Network's name
@@ -231,6 +239,14 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
 
 def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result:
     '''
+    --------- Input -------------------------
+    network      = Metabolic Network, default value None
+    k            = Number of reactions to knockout, set to None
+    log          = Option to show the log from the computation, set to True
+    speed        = Option to try to decrease the computation time set to False
+    threads      = Option to try to increase the number of available threads 
+    
+    --------- OutPut ------------------------
     m = MILP_solve(network=network,k=k)
        
     m.MetNet    = Metabolic Network's name
@@ -354,143 +370,143 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
 
     return  Result(network.Name,del_strat,ys, vs, s,soltype,'MILPO')
 
-def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result_milp:Result=None,criteria:str='both',milp:bool=False,cb:bool=False,objective:Inner_obj=None,log:bool=True) -> Result_inner:
+def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result_milp:Result=None,criteria:str='both',objective:Inner_obj=None,log:bool=False) -> Result_inner:
+    '''
+    --------- Input -------------------------
+    network = Metabolic Network, default value = None
+    result_cb = Results from the callback method, default value = None
+    result_milp = Results from the milp method,
+    criteria = Type of analysis wheter checking with the ys vector, the vs vector or both, default value = 'both'
+    objective = Defines the inner objective for the optimization function, default value = None
+    log = Option to show the logfile from the optimizer, default value set to False
 
+    --------- OutPut ------------------------
+    1)
+        ccc = Inner_check_vs_ys_NOP(network=network, result_cb=cb,criteria='both',objective='chemical',log=True)
+            
+        ccc.Biomass = Production rate for biomass under solution from cb when inner objective is chemical
+        ccc.Chemical = Production rate for chemical under solution from cb when inner objective is chemical
+        ccc.Soltype =  Type of solution
+    2)
+        ccb = Inner_check_vs_ys_NOP(network=network, result_cb=cb,criteria='both',objective='biomass',log=True)
+
+        ccb.Biomass = Production rate for biomass under solution from cb when inner objective is biomass
+        ccb.Chemical = Production rate for chemical under solution from cb when inner objective is biomass
+        ccb.Soltype = Type of solution
+    3)
+        cmc = Inner_check_vs_ys_NOP(network=network, result_milp=m,criteria='both',objective='chemical',log=True)
+        
+        cmc.Biomass = Production rate for biomass under solution from milp when inner objective is chemical
+        cmc.Chemical = Production rate for chemical under solution from milp when inner objective is chemical
+        cmc.Soltype = Type of solution
+    4)
+        cmb = Inner_check_vs_ys_NOP(network=network, result_cb=cb,criteria='both',objective='biomass',log=True)
+    
+        cmb.Biomass = Production rate for biomass under solution from milp when inner objective is biomass
+        cmb.Chemical = Production rate for chemical under solution from milp when inner objective is biomass
+        cmb.Soltype = Type of solution
+    '''
     lb = copy.deepcopy(network.LB)
     ub = copy.deepcopy(network.UB)
     lb[network.biomass] = network.minprod
 
-    if (milp and cb) or (not milp and not cb):
-        return f"Choose milp=True,cb=False or milp=False,cb=True"
-    elif milp and not cb:
-        print('>> Checking on milp')
-        vs = copy.deepcopy(result_milp.Vs)
-        ys = copy.deepcopy(result_milp.Ys)
-    elif cb and not milp:
-        print('>> Checking on CB')
+    if (result_milp is None) and (result_cb is None):
+        raise Exception("Both results can't be None")
+    elif (result_cb is not None) and (result_milp is None):
+        message = f">> Checking on CB Results"
+        mfrom = 'CB'
         vs = copy.deepcopy(result_cb.Vs)
         ys = copy.deepcopy(result_cb.Ys)
-
+    elif (result_milp is not None) and (result_cb is None):
+        message = f">> Checking on MILP Results"
+        mfrom = 'MILP'
+        vs = copy.deepcopy(result_milp.Vs)
+        ys = copy.deepcopy(result_milp.Ys)
+    else:
+        raise Exception("At least one result to check has to be None")
+    
     if objective == 'biomass':
         objct = network.biomass
     elif objective == 'chemical':
         objct = network.chemical
     else:
-        return f"No Inner Objective ('biomass' or 'chemical')"
+        raise Exception("No Inner Objective ('biomass' or 'chemical')")
+    print(f"\n>> {message}\n")
+    print(f">> On Objective {objective}\n")
+    
+    m = gp.Model()
+
+    v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
+
+    m.setObjective((1*v[objct]),GRB.MAXIMIZE)
+    m.addMConstr(network.S,v,'=',network.b,name='Stoi')
     
     if criteria == 'both':
-
-        m = gp.Model()
-
-        v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
-
-        m.setObjective((1*v[objct]),GRB.MAXIMIZE)
-        m.addMConstr(network.S,v,'=',network.b,name='Stoi')
-
         m.addConstrs((lb[j]*ys[j]<= v[j] for j in network.M),name='lb')
 
         m.addConstrs((ub[j]*ys[j] >= v[j] for j in network.M),name='ub')
 
         m.addConstrs((v[j] == vs[j] for j in network.M),name='hards_vs')
-
-        m.Params.OptimalityTol = network.infeas
-        m.Params.IntFeasTol = network.infeas
-        m.Params.FeasibilityTol = network.infeas
-        m.Params.Presolve = 0
-        if not log: m.Params.OutputFlag = 0
-        m.optimize()
-
-        if m.status == GRB.OPTIMAL:
-            vs =  [m.getVarByName('v[%s]'%a).x for a in network.M]
-            soltype = 'optimal'
-        elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
-            vs = [1 if i == objct else 2000 for i in network.M]
-            soltype = 'Infeasible'
     
     elif criteria == 'vs':
-        m = gp.Model()
-
-        v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
-
-        m.setObjective((1*v[objct]),GRB.MAXIMIZE)
-        m.addMConstr(network.S,v,'=',network.b,name='Stoi')
-
         m.addConstrs((lb[j] <= v[j] for j in network.M),name='lb')
 
         m.addConstrs((ub[j] >= v[j] for j in network.M),name='ub')
 
         m.addConstrs((v[j] == vs[j] for j in network.M),name='hards_vs')
 
-        m.Params.OptimalityTol = network.infeas
-        m.Params.IntFeasTol = network.infeas
-        m.Params.FeasibilityTol = network.infeas
-        m.Params.Presolve = 0
-        if not log: m.Params.OutputFlag = 0
-        m.optimize()
-
-        if m.status == GRB.OPTIMAL:
-            vs =  [m.getVarByName('v[%s]'%a).x for a in network.M]
-            soltype = 'optimal'
-        elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
-            vs = [1 if i == objct else 2000 for i in network.M]
-            soltype = 'Infeasible'
-
     elif criteria == 'ys':
-        m = gp.Model()
-
-        v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
-
-        m.setObjective((1*v[objct]),GRB.MAXIMIZE)
-        m.addMConstr(network.S,v,'=',network.b,name='Stoi')
-
         m.addConstrs((lb[j] * ys[j] <= v[j] for j in network.M),name='lb')
 
         m.addConstrs((ub[j] * ys[j] >= v[j] for j in network.M),name='ub')
-
-        m.Params.OptimalityTol = network.infeas
-        m.Params.IntFeasTol = network.infeas
-        m.Params.FeasibilityTol = network.infeas
-        m.Params.Presolve = 0
-        if not log: m.Params.OutputFlag = 0
-        m.optimize()
-
-        if m.status == GRB.OPTIMAL:
-            vs =  [m.getVarByName('v[%s]'%a).x for a in network.M]
-            soltype = 'optimal'
-        elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
-            vs = [1 if i == objct else 2000 for i in network.M]
-            soltype = 'Infeasible'
+    
     else:
-        return f"Choose the type if inner check [vs,ys,both]"
-
-    return Result_inner(vs[network.biomass],vs[network.chemical],soltype) 
-
-def Pareto_Frontier(network:M_Network=None,coef:int=None) -> Pareto_point:
-    lb = copy.deepcopy(network.LB)
-    ub = copy.deepcopy(network.UB)
-
-    m = gp.Model()
-
-    v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
-
-    m.setObjective((coef*v[network.chemical] + (1-coef)*v[network.biomass]),GRB.MAXIMIZE)
-
-    m.addMConstr(network.S,v,'=',network.b,name='Stoi')
-    m.addConstrs((lb[j] <= v[j] for j in network.M), name='LBwt')
-    m.addConstrs((ub[j] >= v[j] for j in network.M), name='UBwt')
+        raise Exception("Choose the type if inner check [vs,ys,both]")
     
     m.Params.OptimalityTol = network.infeas
     m.Params.IntFeasTol = network.infeas
     m.Params.FeasibilityTol = network.infeas
-    m.Params.Outputmag = 0
+    m.Params.Presolve = 0
+    if not log: m.Params.OutputFlag = 0
     m.optimize()
-    if m.status == GRB.OPTIMAL:
-        vs =  [m.getVarByName('v[%s]'%a).x for a in network.M] 
 
-    bio_obj = vs[network.biomass]
-    che_obj = vs[network.chemical]
+    if m.status == GRB.OPTIMAL:
+        vs =  [m.getVarByName('v[%s]'%a).x for a in network.M]
+        soltype = 'optimal'
+    elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
+        vs = [1 if i == objct else 2000 for i in network.M]
+        soltype = 'Infeasible'
     
-    return Pareto_point(bio_obj,che_obj)
+    return Result_inner(vs[network.biomass],vs[network.chemical],soltype,mfrom,criteria,objective) 
+
+
+
+# def Pareto_Frontier(network:M_Network=None,coef:int=None) -> Pareto_point:
+#     lb = copy.deepcopy(network.LB)
+#     ub = copy.deepcopy(network.UB)
+
+#     m = gp.Model()
+
+#     v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
+
+#     m.setObjective((coef*v[network.chemical] + (1-coef)*v[network.biomass]),GRB.MAXIMIZE)
+
+#     m.addMConstr(network.S,v,'=',network.b,name='Stoi')
+#     m.addConstrs((lb[j] <= v[j] for j in network.M), name='LBwt')
+#     m.addConstrs((ub[j] >= v[j] for j in network.M), name='UBwt')
+    
+#     m.Params.OptimalityTol = network.infeas
+#     m.Params.IntFeasTol = network.infeas
+#     m.Params.FeasibilityTol = network.infeas
+#     m.Params.Outputmag = 0
+#     m.optimize()
+#     if m.status == GRB.OPTIMAL:
+#         vs =  [m.getVarByName('v[%s]'%a).x for a in network.M] 
+
+#     bio_obj = vs[network.biomass]
+#     che_obj = vs[network.chemical]
+    
+#     return Pareto_point(bio_obj,che_obj)
 
 # 
 # =============================== Old Funcs ====================================================================================================
