@@ -91,8 +91,8 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
 
                     # bestknownchem = cur_obj
                     if abs(model._vi[network.biomass] - model._voj[network.biomass]) > 1e-6:
-                        for comb in ki:
-                            model.cbLazy(vi_biom_val <= model._vars[network.biomass]) + (math.ceil(vij[network.biomass]*10/10)*(sum(model._varsy[f] for f in comb)))
+                            print(f"{vi_biom_val} <= vbiom + ceil({vij[network.biomass]*10/10}) * (sum{['y[%d]'%g for g in knockset]})")
+                            model.cbLazy(vi_biom_val <= model._vars[network.biomass]) + (math.ceil(vij[network.biomass]*10/10)*(sum(model._varsy[f] for f in knockset)))
                     
                     if model._pbnd < vi_chem_val: 
                         print(f"{' '*3}Optimality cuts, pbnd < vi[chemical]")
@@ -100,16 +100,15 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                         print(f"Update: pbdn = {vi_chem_val}")
                         print(f"Set Solution")
                         model.cbLazy(vi_chem_val >= model._vars[network.chemical] + cur_obj*(sum(model._varsy[i] for i in knockset)))
-                   
                         model._pbnd = vi_chem_val
                         # Updating the model variables
                         model._sv = model._vi
                         model._sy = model._yoj
                         # Setting solution
-                        model.cbSetSolution(model._vars,model._sv)
-                        model.cbSetSolution(model._varsy,model._sy)
+                        model.cbSetSolution(model._vars, model._sv)
+                        model.cbSetSolution(model._varsy, model._sy)
 
-                    elif model._pbnd >= vi_chem_val:
+                    elif model._pbnd > vi_chem_val:
                         print(f"{' '*3}PBND > vi_chem")
                         model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
                     
