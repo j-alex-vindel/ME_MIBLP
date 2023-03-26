@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'MY_MODULES'))) 
 
-from CB_Sol_P import CB_P_t,CB_P
+from CB_Sol_P import CB_P
 from Ob_Met_Net_solmethods import Inner_check_vs_ys_NOP
 
 sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iJO1366')))
