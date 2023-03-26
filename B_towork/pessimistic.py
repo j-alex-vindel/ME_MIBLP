@@ -26,7 +26,7 @@ r = {'V_index':[metnet.biomass,     metnet.biomass,       metnet.chemical,      
 
 
 
-c1p = CB_P_t(network=metnet,k=1,log=True)
+c1p = CB_P(network=metnet,k=1,log=True)
 
 cc1c = Inner_check_vs_ys_NOP(network=metnet,result_cb=c1p,criteria='ys',objective='chemical')
 
