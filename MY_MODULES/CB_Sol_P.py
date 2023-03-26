@@ -242,7 +242,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'CBP')
 
 
-
+##### Pessimistic Callback Function withouht changes from Thursday's meeting ####
 def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,threads:bool=False) -> Result_cb:
     '''
         cb = CB_solve_2_NOP(network=network,k=k,log=True,speed=False,threads=False)
