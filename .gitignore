@@ -10,4 +10,7 @@ B_iJO1366/*.txt
 */run_experiment_k2.py
 */run_experiment_k3.py
 B_towork/justrun.py
-B_towork/*.txt
+B_towork/logfiles
+*/*.md
+B_towork/testlp.py
+B_towork/test.lp
