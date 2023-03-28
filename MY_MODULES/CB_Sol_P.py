@@ -461,10 +461,11 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
     m = gp.Model()
     cbv = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='cbv')
     cby = m.addVars(network.M,vtype=GRB.BINARY,name='cby')
+    cbvs = [cbv[i] for i in network.M]
 
     m.setObjective(1*cbv[network.chemical],GRB.MAXIMIZE)
     
-    m.addMConstr(network.S,cbv,'=',network.b,name='Stoi')
+    m.addMConstr(network.S,cbvs,'=',network.b,name='Stoi')
     # m.addConstrs((gp.quicksum(network.S[i,j]*cbv[j] for j in network.M) == 0 for i in network.N),name='Stoichiometry')
 
     m.addConstr(cbv[network.biomass] >= minprod, name='target')
@@ -479,11 +480,11 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
     imodel = gp.Model()
     fv = imodel.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='fv')
     imodel.params.LogToConsole = 0
-    
+    fvs = [fv[i] for i in network.M]
     # Inner model Objective
     imodel.setObjective(2000*fv[network.biomass] - fv[network.chemical], GRB.MAXIMIZE)
     
-    imodel.addMConstr(network.S,fv,'=',network.b,name='Stoi')
+    imodel.addMConstr(network.S,fvs,'=',network.b,name='Stoi')
     # imodel.addConstrs((gp.quicksum(network.S[i,j]*fv[j] for j in network.M) == 0 for i in network.N),name='S2')
     
     imodel.addConstr(fv[network.biomass] >= minprod, name='target2')
