@@ -167,10 +167,10 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
     m = gp.Model()
     cbv = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='cbv')
     cby = m.addVars(network.M,vtype=GRB.BINARY,name='cby')
-
+    cbvs = [cbv[i] for i in network.M]
     m.setObjective(1*cbv[network.chemical],GRB.MAXIMIZE)
     
-    m.addMConstr(network.S,cbv,'=',network.b,name='Stoi')
+    m.addMConstr(network.S,cbvs,'=',network.b,name='Stoi')
     # m.addConstrs((gp.quicksum(network.S[i,j]*cbv[j] for j in network.M) == 0 for i in network.N),name='Stoichiometry')
 
     m.addConstr(cbv[network.biomass] >= minprod, name='target')
