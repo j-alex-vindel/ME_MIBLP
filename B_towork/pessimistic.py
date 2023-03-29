@@ -14,18 +14,18 @@ metnet = MN_ijo1366
 
 
 
-# cp = CB_P(network=metnet,k=2,log=True)
+cp = CB_P_t(network=metnet,k=2,log=True)
 
 
-# ccc = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='chemical')
+ccc = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='chemical')
 
-# ccb = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='biomass')
+ccb = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='biomass')
 
-# r = {'V_index':[metnet.biomass,     metnet.biomass,       metnet.chemical,         metnet.chemical],
-#      'Name':[metnet.Rxn[metnet.biomass],metnet.Rxn[metnet.biomass],metnet.Rxn[metnet.chemical],metnet.Rxn[metnet.chemical]],
-#     'CB_P':[cp.Vs[metnet.biomass],  cp.Vs[metnet.biomass], cp.Vs[metnet.chemical], cp.Vs[metnet.chemical]   ],
-#      'IOF':[ccb.OF,                 ccc.OF,                ccb.OF                , ccc.OF],
-#      'IC':[ccb.Biomass,             ccc.Biomass,           ccb.Chemical,            ccc.Chemical]}
+r = {'V_index':[metnet.biomass,     metnet.biomass,       metnet.chemical,         metnet.chemical],
+     'Name':[metnet.Rxn[metnet.biomass],metnet.Rxn[metnet.biomass],metnet.Rxn[metnet.chemical],metnet.Rxn[metnet.chemical]],
+    'CB_P':[cp.Vs[metnet.biomass],  cp.Vs[metnet.biomass], cp.Vs[metnet.chemical], cp.Vs[metnet.chemical]   ],
+     'IOF':[ccb.OF,                 ccc.OF,                ccb.OF                , ccc.OF],
+     'IC':[ccb.Biomass,             ccc.Biomass,           ccb.Chemical,            ccc.Chemical]}
 
 
 

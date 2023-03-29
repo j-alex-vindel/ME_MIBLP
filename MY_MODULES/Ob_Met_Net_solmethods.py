@@ -437,9 +437,9 @@ def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result
     m = gp.Model()
 
     v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
-
+    vs = [v[i] for i in network.M]
     m.setObjective((1*v[objct]),GRB.MAXIMIZE)
-    m.addMConstr(network.S,v,'=',network.b,name='Stoi')
+    m.addMConstr(network.S,vs,'=',network.b,name='Stoi')
     
     if criteria == 'both':
         m.addConstrs((lb[j]*ys[j]<= v[j] for j in network.M),name='lb')
