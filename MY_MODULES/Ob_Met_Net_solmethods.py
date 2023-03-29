@@ -271,6 +271,7 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
 
     # Variables
     v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
+    vs = [v[i] for i in network.M]
     y = m.addVars(network.M,vtype=GRB.BINARY,name='y')
 
     # Dual Variables
@@ -291,7 +292,7 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
     m.addConstr(sum(1-y[j] for j in network.KO) == k, name='knapsack')
 
     # Stoichimetric Constrs
-    m.addMConstr(network.S,v,'=',network.b,name='Stoi')
+    m.addMConstr(network.S,vs,'=',network.b,name='Stoi')
     # m.addConstrs((gp.quicksum(network.S[i,j] * v[j] for j in network.M) == network.b[i] for i in network.N),name='Stoichiometry')
     
     # Dual Objective
