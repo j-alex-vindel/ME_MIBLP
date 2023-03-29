@@ -304,8 +304,8 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'CBP')
 
 
-##### Pessimistic Callback Function withouht changes from Thursday's meeting ####
-def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,threads:bool=False) -> Result_cb:
+##### Pessimistic Callback Function with changes from Monday's meeting ####
+def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,threads:bool=False,lp:bool=False) -> Result_cb:
     '''
         cb = CB_solve_2_NOP(network=network,k=k,log=True,speed=False,threads=False)
            
@@ -355,6 +355,7 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
             model._voj = model.cbGetSolution(model._vars)
             model._yoj = model.cbGetSolution(model._varsy)
             knockset =  [i for i,y in enumerate(model._yoj) if model._yoj[i] < 1e-6]
+            ysum = [model._varsy[g] for g in knockset]
 
             if len(knockset) != k:
                 return
@@ -374,6 +375,12 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
             if inner_status != GRB.OPTIMAL:
                 print(f"{' '*3}feasibility cuts inner not optinal MIPSOL")
                 model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
+                ysum = [model._varsy[j] for j in knockset]
+                expr = sum(ysum)
+                sense = '>='
+                rhs = 1
+                lazycts.append((expr,sense,rhs))
+
             else:
                 vi_biom_val = round(model._vi[network.biomass],6)
                 vi_chem_val = round(model._vi[network.chemical],6)
@@ -394,14 +401,31 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
                     model.cbSetSolution(model._vars, model._sv)
                     model.cbSetSolution(model._varsy, model._sy)
 
+                    sense = '<='
+                    rhs = vi_chem_val
+                    expr =  model._vars[network.chemical] - cur_obj*(sum(ysum))
+                    lazycts.append((expr,sense,rhs))
+
                     if abs(model._vi[network.biomass] - model._voj[network.biomass]) > 1e-6:
                         for comb in ki:
                             model.cbLazy(vi_biom_val <= model._vars[network.biomass] +
                             (math.ceil(vij[network.biomass]*10)/10) *(sum(model._varsy[f] for f in comb)))
+                            print(f"{vi_biom_val} <= vbiom +{math.ceil(vij[network.biomass]*10)/10} *(sum{['y[%d]'%g for g in comb]})")
+                            sense = '>='
+                            rhs = vi_biom_val
+                            ysumc = [model._varsy[j] for j in comb]
+                            expr = model._vars[network.biomass] + (math.ceil(vij[network.biomass]*10)/10) *sum(ysumc)
+                            lazycts.append((expr,sense,rhs))
+
                 
                 elif model._pbnd >= vi_chem_val:
                     print(f"{' '*3}PBND > vi_chem")
                     model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
+                    expr = sum(ysum)
+                    sense = '>='
+                    rhs = 1
+                    lazycts.append((expr,sense,rhs))
+
 
 
 
@@ -432,6 +456,7 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
                     else:
                         model._ryo[y] = 1.0
                 knock = [i for i,y in enumerate(model._ryo) if model._ryo[i] < 1e-6]
+                ysum = [model._varsy[g] for g in knock]
                 if sum(model._ryo.values()) != len(model._ryo)-k:
                     return
                 else:
@@ -441,7 +466,11 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
                     print(f"Algorithm response: \n")
                     if inner_status != GRB.OPTIMAL:
                         print(f"{' '*3}Feasibility cuts - inner not optimal")
-                        model.cbCut(sum([model._varsy[f] for f in knock]) >= 1)
+                        model.cbLazy(sum([model._varsy[f] for f in knock]) >= 1)
+                        expr = sum(ysum)
+                        sense = '>='
+                        rhs = 1
+                        lazycts.append((expr,sense,rhs))
 
                     elif (model._vi[network.chemical] > model._pbnd) and (model._vi[network.chemical] > model._sv[network.chemical]): # added condition to set solution always better
                         model._sv = model._vi
@@ -456,7 +485,11 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
                     
                     else:
                         print(f"{' '*3}Optimality cuts - vi not larger or equal than pnbd")
-                        model.cbCut(sum([model._varsy[f] for f in knock]) >= 1)
+                        model.cbLazy(sum([model._varsy[f] for f in knock]) >= 1)
+                        expr = sum(ysum)
+                        sense = '>='
+                        rhs = 1
+                        lazycts.append((expr,sense,rhs))
     
     m = gp.Model()
     cbv = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='cbv')
@@ -500,7 +533,7 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
     m._cbcnt = 0
     m._sv = [0 for i in network.M]
     m._sy = []
-
+    lazycts = []
     m.Params.OptimalityTol = network.infeas
     m.Params.IntFeasTol = network.infeas
     m.Params.FeasibilityTol = network.infeas
@@ -512,6 +545,21 @@ def CB_P_t(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thre
     m.Params.TimeLimit = network.time_limit
 
     m.optimize(lazycall)
+    
+    if lp:
+        for l in range(len(lazycts)):
+            if lazycts[l][1] == '=':
+                c = m.addConstr(lazycts[l][0] == lazycts[l][2],'lzy%d'%l)
+                c.Lazy = 1
+            elif lazycts[l][1] == '>=':
+                c = m.addConstr(lazycts[l][0] >= lazycts[l][2],'lzy%d'%l)
+                c.Lazy = 1
+            elif lazycts[l][1] == '<=':
+                c = m.addConstr(lazycts[l][0] <= lazycts[l][2],'lzy%d'%l)
+                c.Lazy = 1
+
+        filename = f"pess_log_k{k}.lp"
+        m.write(filename)
     
     cb_time = m.Runtime
 

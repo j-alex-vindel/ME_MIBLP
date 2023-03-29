@@ -14,3 +14,4 @@ B_towork/logfiles
 */*.md
 B_towork/testlp.py
 B_towork/test.lp
+B_towork/test*.lp

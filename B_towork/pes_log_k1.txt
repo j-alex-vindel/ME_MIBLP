@@ -1,0 +1,529 @@
+**** Solving Callbacks k=1 ****
+# Variables (reactions in the network): 2583
+Current Infeasibility: -> 1e-06
+KO set:  37  reactions
+MN: iJO1366
+-- Pessimistic Approach --
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-03-02
+Set parameter IntFeasTol to value 1e-06
+Set parameter LazyConstraints to value 1
+Set parameter IntFeasTol to value 1e-06
+Set parameter Presolve to value 0
+Set parameter TimeLimit to value 1000
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (win64)
+
+CPU model: Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz, instruction set [SSE2|AVX|AVX2|AVX512]
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+
+Optimize a model with 9519 rows, 5166 columns and 21144 nonzeros
+Model fingerprint: 0xb35ae7a0
+Variable types: 2583 continuous, 2583 integer (2583 binary)
+Coefficient statistics:
+  Matrix range     [2e-06, 1e+03]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-01, 4e+01]
+Variable types: 2464 continuous, 2702 integer (2583 binary)
+
+MIPSOL
+Vbio: 0.12075090687517331
+Vche: 10.90922166738725
+Objective = 10.909222
+Best Bound = 1e+100
+Curnt Pbnd = -1000
+Viche: 0.08004916325189862
+Algorithm response: 
+
+   Optimality cuts, pbnd < vi[chemical]
+0.080049 >= vchem + 10.909222*(sum['y[1757]'])
+Update: pbdn = 0.080049
+0.241502 <= vbiom +0.3 *(sum['y[577]'])
+0.241502 <= vbiom +0.3 *(sum['y[1216]'])
+0.241502 <= vbiom +0.3 *(sum['y[1243]'])
+0.241502 <= vbiom +0.3 *(sum['y[1445]'])
+0.241502 <= vbiom +0.3 *(sum['y[1451]'])
+0.241502 <= vbiom +0.3 *(sum['y[1626]'])
+0.241502 <= vbiom +0.3 *(sum['y[1757]'])
+0.241502 <= vbiom +0.3 *(sum['y[1759]'])
+0.241502 <= vbiom +0.3 *(sum['y[2065]'])
+0.241502 <= vbiom +0.3 *(sum['y[2074]'])
+0.241502 <= vbiom +0.3 *(sum['y[2239]'])
+
+MIPSOL
+Vbio: 0.12075090687517331
+Vche: 10.909221748929973
+Objective = 10.909222
+Best Bound = 1e+100
+Curnt Pbnd = 0.080049
+Viche: 0.06457173496287584
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPSOL
+Vbio: 0.12075090687517331
+Vche: 1.7653797313870971
+Objective = 1.76538
+Best Bound = 1e+100
+Curnt Pbnd = 0.080049
+Viche: 0.050688851577851926
+Algorithm response: 
+
+   PBND > vi_chem
+
+Root relaxation: objective 1.090906e+01, 1443 iterations, 0.09 seconds (0.09 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   10.90906    0    2          -   10.90906      -     -    0s
+
+MIPSOL
+Vbio: 0.24150199999979804
+Vche: 0.08005255778346054
+Objective = 0.080053
+Best Bound = 10.909056
+Curnt Pbnd = 0.080049
+Viche: 0.08004916325189854
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPSOL
+Vbio: 0.12075090687517331
+Vche: 7.586749218570775
+Objective = 7.586749
+Best Bound = 10.909056
+Curnt Pbnd = 0.080049
+Viche: 0.06535894107396069
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPSOL
+Vbio: 0.12075090687517331
+Vche: 10.898457032921783
+Objective = 10.898457
+Best Bound = 10.909056
+Curnt Pbnd = 0.080049
+Viche: 0.07983134445473763
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673417296
+Curnt PBND: 0.080049
+Viche: 1.0
+Algorithm response: 
+
+   Feasibility cuts - inner not optimal
+
+MIPSOL
+Vbio: 0.24150183202971853
+Vche: 0.08004916325189862
+Objective = 0.080049
+Best Bound = 10.909056
+Curnt Pbnd = 0.080049
+Viche: 0.08004916325189872
+Algorithm response: 
+
+   PBND > vi_chem
+     0     0   10.90906    0    2          -   10.90906      -     -    0s
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673407238
+Curnt PBND: 0.080049
+Viche: 0.0627177
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+     0     0   10.90906    0    2          -   10.90906      -     -    0s
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673407238
+Curnt PBND: 0.080049
+Viche: 0.0627177
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+     0     0   10.90906    0    2          -   10.90906      -     -    0s
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673407238
+Curnt PBND: 0.080049
+Viche: 0.0800492
+Algorithm response: 
+
+    Set Solution 
+
+MIPSOL
+Vbio: 0.24150183202971956
+Vche: 0.08004916325189894
+Objective = 0.080049
+Best Bound = 10.909056
+Curnt Pbnd = 0.08004916325189894
+Viche: 0.08004916325189894
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673407238
+Curnt PBND: 0.08004916325189894
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+     0     1   10.90906    0    2          -   10.90906      -     -    0s
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.08004916325189894
+Viche: 0.0645717
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.08004916325189894
+Viche: 0.0798313
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.08004916325189894
+Viche: 0.0794141
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.08004916325189894
+Viche: 1.0
+Algorithm response: 
+
+   Feasibility cuts - inner not optimal
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.08004916325189894
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.08004916325189894
+Viche: 0.0653589
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.08004916325189894
+Viche: 0.250371
+Algorithm response: 
+
+    Set Solution 
+
+MIPSOL
+Vbio: 0.12075090687517331
+Vche: 8.814398991752425
+Objective = 8.814399
+Best Bound = 10.909056
+Curnt Pbnd = 0.25037133640997816
+Viche: 0.25037133640997816
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPSOL
+Vbio: 0.2400860500268246
+Vche: 0.25037133640997816
+Objective = 0.250371
+Best Bound = 10.909056
+Curnt Pbnd = 0.25037133640997816
+Viche: 0.25037133640997816
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+Viche: 0.0520033
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+Viche: 0.0434134
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+Viche: 1.0
+Algorithm response: 
+
+   Feasibility cuts - inner not optimal
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+Viche: 0.0796222
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+Viche: 0.0797347
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+Viche: 0.0537818
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+
+MIPSOL
+Vbio: 0.12075090687517331
+Vche: 10.909055673396981
+Objective = 10.909056
+Best Bound = 10.909056
+Curnt Pbnd = 0.25037133640997816
+Viche: 0.08004916325190632
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.909055673396981
+Curnt PBND: 0.25037133640997816
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.301417968455462
+Curnt PBND: 0.25037133640997816
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.127807195647902
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.127807195647902
+Curnt PBND: 0.25037133640997816
+
+MIPNODE
+Obj= -1e+100
+Bnd= 10.127807195647902
+Curnt PBND: 0.25037133640997816
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.815307804541
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.815307804541
+Curnt PBND: 0.25037133640997816
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.815307804527015
+Curnt PBND: 0.25037133640997816
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.086142558587632
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.086142558587632
+Curnt PBND: 0.25037133640997816
+
+MIPSOL
+Vbio: 0.241502
+Vche: 0.08005255772082852
+Objective = 0.080053
+Best Bound = 9.086143
+Curnt Pbnd = 0.25037133640997816
+Viche: 0.08004916325190702
+Algorithm response: 
+
+   PBND > vi_chem
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.086142558587632
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.086142558587632
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.086142558587632
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.086142558587632
+Curnt PBND: 0.25037133640997816
+
+MIPNODE
+Obj= -1e+100
+Bnd= 9.086142558577873
+Curnt PBND: 0.25037133640997816
+
+MIPNODE
+Obj= -1e+100
+Bnd= 5.440316328880982
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 0.08005255772082852
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 0.08005255771980534
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+MIPNODE
+Obj= -1e+100
+Bnd= 0.08005255481506612
+Curnt PBND: 0.25037133640997816
+Viche: 0.0800492
+Algorithm response: 
+
+   Optimality cuts - vi not larger or equal than pnbd
+
+Cutting planes:
+  Gomory: 1
+  Lazy constraints: 45
+
+Explored 47 nodes (1644 simplex iterations) in 1.51 seconds (0.51 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 0
+No other solutions better than -1e+100
+
+Model is infeasible
+Best objective -, best bound -, gap -
+
+User-callback calls 219, time in user-callback 0.79 sec
+
+>> >> Checking on CB Results
+
+>> On Objective chemical
+
+Set parameter IntFeasTol to value 1e-06
+Set parameter Presolve to value 0
+
+>> >> Checking on CB Results
+
+>> On Objective biomass
+
+Set parameter IntFeasTol to value 1e-06
+Set parameter Presolve to value 0
+ 
+>>Strategy ['all']
+
+|    |   V_index | Name                           |   CB_P | IOF      |   IC |
+|---:|----------:|:-------------------------------|-------:|:---------|-----:|
+|  0 |        18 | BIOMASS_Ec_iJO1366_core_53p95M |   2000 | biomass  |    0 |
+|  1 |        18 | BIOMASS_Ec_iJO1366_core_53p95M |   2000 | chemical |    0 |
+|  2 |       261 | EX_succ_e                      |   2000 | biomass  |    0 |
+|  3 |       261 | EX_succ_e                      |   2000 | chemical |    0 |
+ 
