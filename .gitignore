@@ -16,3 +16,4 @@ B_towork/testlp.py
 B_towork/test.lp
 B_towork/test*.lp
 B_towork/log*.txt
+B_towork/pes*.txt

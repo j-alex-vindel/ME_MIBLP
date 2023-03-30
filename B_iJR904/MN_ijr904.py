@@ -24,7 +24,7 @@ S = data[ijr904]['S']
 
 # Identiying the index of the reactions, biomass and chemical of interest 
 biomas = Rxn.index('BIOMASS_Ecoli')
-chemical = Rxn.index('EX_succ_e')
+chemical = Rxn.index('EX_ac_e') #acetate
 
 # Biological Assumptions
 
