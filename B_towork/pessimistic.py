@@ -14,7 +14,7 @@ metnet = MN_ijo1366
 
 
 
-cp = CB_P_t(network=metnet,k=1,log=True,lp=True)
+cp = CB_P_t(network=metnet,k=1,log=True)
 
 
 ccc = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='chemical')
