@@ -70,12 +70,11 @@ def latex_tables_pes(bacteria:str=None):
     print('Tables Writen!!!')
 
 
-
 if __name__ == '__main__':
     ks = ['n']
     names = ['iJR904','iJO1366','iAF1260']
     sleep = 5
-    file = f"O_MILP_CB_kn"
+    file = f"full_envelope"
     for name in names:
         main(ks=ks,name=name,sleep=sleep,file=file)
         
