@@ -4,10 +4,10 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__
 
 
 from Ob_Met_Net_solmethods import MILP_sol_OP,CB_sol_OP
-from Ob_Met_Net import Met_Net
+from MN_ijo1366 import MN_ijo1366
 import pandas as pd
 
-metnet = Met_Net
+metnet = MN_ijo1366
 
 target = 1.0
 

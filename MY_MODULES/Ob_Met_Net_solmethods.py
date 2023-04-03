@@ -296,7 +296,7 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
         m.addConstrs((y[j] == 1 for j in network.M if j not in network.KO), name='y_essentials')
         m.addConstr(sum(1-y[j] for j in network.KO) == k, name='knapsack')
     elif network.KO is None:
-        m.addConstr(sum(1-y[j] for j in network.M) == k, name='knapsack')
+        m.addConstr(sum(1-y[j] for j in network.M)  == k, name='knapsack')
 
     # Stoichimetric Constrs
     m.addMConstr(network.S,vs,'=',network.b,name='Stoi')
