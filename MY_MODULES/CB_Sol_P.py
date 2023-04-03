@@ -31,7 +31,10 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         print(f'\n**** Solving Callbacks k={k} ****')
         print(f'# Variables (reactions in the network): {len(network.M)}')
         print('Current Infeasibility:',network.infeas,sep=' -> ')
-        print('KO set: ',len(network.KO), ' reactions')
+        if network.KO is not None:
+            print('KO set: ',len(network.KO), ' reactions')
+        else:
+            print(f"KO set: all reactions in KO -> {len(network.M)}")
         print(f"MN: {network.Name}")
         print(f"Chemical: {network.Rxn[network.chemical]} -> {network.chemical}")
         print(f"Growth: {network.Rxn[network.biomass]} -> {network.biomass}")
@@ -97,7 +100,10 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                 else:
                     vi_biom_val = model._vi[network.biomass]
                     vi_chem_val = model._vi[network.chemical]
-                    knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.KO)
+                    if network.KO is not None:
+                        knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.KO)
+                    else:
+                        knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.M)
                     ki = (i for i in combinations(knockset_inner,k))
 
                     # bestknownchem = cur_obj
@@ -234,8 +240,11 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         m.addConstrs((lb[j]*cby[j] <= cbv[j] for j in network.M),name='LB')
         m.addConstrs((cbv[j] <= ub[j]*cby[j] for j in network.M),name='UB')
         
-        m.addConstr(sum(1-cby[j] for j in network.KO) == k, name='knapsack')
-        m.addConstrs((cby[j] == 1 for j in network.M if j not in network.KO),name='Essen')
+        if network.KO is not None:
+            m.addConstr(sum(1-cby[j] for j in network.KO) == k, name='knapsack')
+            m.addConstrs((cby[j] == 1 for j in network.M if j not in network.KO),name='Essen')
+        elif network.KO is None:
+            m.addConstr(sum(1-cby[j] for j in network.M) == k, name='knapsack')
 
 
         imodel = gp.Model()

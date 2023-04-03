@@ -52,5 +52,3 @@ knockout = [rxn.index(i) for i in non_essentials]
 # =========== Metabolic Network Object ====================
 
 MN_ijo1366 = Met_Net(S=S,LB=LB,UB=UB,Rxn=rxn,Met=met,Name=ijo1366,KO=knockout,biomass= biomas, chemical=chemical)
-
-

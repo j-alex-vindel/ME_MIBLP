@@ -5,12 +5,13 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__
 from CB_Sol_P import CB_P,CB_P_t
 from Ob_Met_Net_solmethods import Inner_check_vs_ys_NOP
 
-sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iJO1366')))
-from MN_ijo1366 import MN_ijo1366
+sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iJR904')))
+from MN_ijr904 import MN_ijr904
 import pandas as pd
 
-metnet = MN_ijo1366
+metnet = MN_ijr904
 
+metnet.KO = None
 
 cp = CB_P(network=metnet,k=1,log=True)
 
@@ -43,6 +44,7 @@ df = pd.DataFrame.from_dict(r)
 df.round(decimals=5)
 print(f" ")
 print(f">>Strategy {cp.Strategy} -> {[metnet.Rxn.index(i) for i in cp.Strategy]}\n")
+print(f">> Soltype {cp.Soltype}")
 print(df.to_markdown())
 print(f" ")
 
@@ -51,4 +53,5 @@ df1 = pd.DataFrame.from_dict(r1)
 df1.round(decimals=5)
 print(f" ")
 print(f">>Strategy {c1p.Strategy} -> {[metnet.Rxn.index(i) for i in c1p.Strategy]}\n")
+print(f">> Soltype {c1p.Soltype}")
 print(df1.to_markdown())
