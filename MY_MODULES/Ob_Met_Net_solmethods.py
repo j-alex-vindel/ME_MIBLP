@@ -178,16 +178,21 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
     m.addConstrs((lb[j]*cby[j] <= cbv[j] for j in network.M),name='LB')
     m.addConstrs((cbv[j] <= ub[j]*cby[j] for j in network.M),name='UB')
     
-    m.addConstr(sum(1-cby[j] for j in network.KO) == k, name='knapsack')
-    m.addConstrs((cby[j] == 1 for j in network.M if j not in network.KO))
+    if network.KO is not None:
+        m.addConstr(sum(1-cby[j] for j in network.KO) == k, name='knapsack')
+        m.addConstrs((cby[j] == 1 for j in network.M if j not in network.KO),name='Essen')
+
+    elif network.KO is None:
+        m.addConstr(sum(1-cby[j] for j in network.M) == k, name='knapsack')
 
 
     imodel = gp.Model()
     fv = imodel.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='fv')
+    fvs = [fv[i] for i in network.M]
     imodel.params.LogToConsole = 0
     imodel.setObjective(2000*fv[network.biomass] + fv[network.chemical], GRB.MAXIMIZE)
     
-    imodel.addMConstr(network.S,fv,'=',network.b,name='Stoi')
+    imodel.addMConstr(network.S,fvs,'=',network.b,name='Stoi')
     # imodel.addConstrs((gp.quicksum(network.S[i,j]*fv[j] for j in network.M) == 0 for i in network.N),name='S2')
     
     imodel.addConstr(fv[network.biomass] >= minprod, name='target2')
@@ -286,10 +291,12 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
     # Objective
     m.setObjective((1*v[network.chemical]),GRB.MAXIMIZE)
 
+    if network.KO is not None:
     # Knapsack Constrs
-    m.addConstrs((y[j] == 1 for j in network.M if j not in network.KO), name='y_essentials')
-
-    m.addConstr(sum(1-y[j] for j in network.KO) == k, name='knapsack')
+        m.addConstrs((y[j] == 1 for j in network.M if j not in network.KO), name='y_essentials')
+        m.addConstr(sum(1-y[j] for j in network.KO) == k, name='knapsack')
+    elif network.KO is None:
+        m.addConstr(sum(1-y[j] for j in network.M) == k, name='knapsack')
 
     # Stoichimetric Constrs
     m.addMConstr(network.S,vs,'=',network.b,name='Stoi')
