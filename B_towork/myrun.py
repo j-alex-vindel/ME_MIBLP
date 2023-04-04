@@ -7,7 +7,7 @@ def main(ks:list=None,name:str=None,sleep:int=None,file:str=None):
     for k in ks:
         # os.system(f"python ../A_modules/{sys.argv[1]}.py")
         print(f">> Folder {name}")
-        print(f">> Running -> ../{name}/{file}")
+        print(f">> Running -> ../B_{name}/{file}.py")
 
         os.system(f"python ../B_{name}/{file}.py")
         print(f'>> Resting for {sleep}')
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     ks = ['n']
     names = ['iJR904','iJO1366','iAF1260']
     sleep = 5
-    file = f"full_envelope"
+    file = f"full_run"
     for name in names:
         main(ks=ks,name=name,sleep=sleep,file=file)
         

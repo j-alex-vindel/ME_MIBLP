@@ -52,7 +52,7 @@ ax.set_title(f"Strain ({metnet.Name}) Production Envelope")
 plt.xlabel(r"""Biomass production $mmol/g(Dw)h$""")
 plt.ylabel(r"""Chemical production $mmol/g(Dw)h$""")
 
-plt.show()
+
 plt.savefig(f"../Results/Graphs/NON_FE_{metnet.Name}.png")
 
 fig,ax = plt.subplots()
@@ -62,5 +62,5 @@ ax.set(xlim=(0,1.01),ylim=(0,1.01))
 ax.set_title(f"Strain ({metnet.Name}) Normalized Production Envelope")
 plt.xlabel('% Biomass')
 plt.ylabel('% Chemical')
-plt.show()
+
 plt.savefig(f"../Results/Graphs/N_FE_{metnet.Name}.png")
