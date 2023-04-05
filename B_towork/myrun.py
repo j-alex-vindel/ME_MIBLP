@@ -77,7 +77,7 @@ def pessimistic_run(bacteria:str=None,target:float=None,k:int=None,log:bool=Fals
     print(f">> K -> {k}")
     now = datetime.datetime.now()
     if log:
-        os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k} > ../Results/LOG_P/log{k}{target}_{bacteria}_{now.day}.txt")
+        os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k} > ../Results/LOG_P/log_{bacteria}_{k}{int(100*target)}_{now.day}.txt")
     else:
         os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k}")
     
