@@ -5,13 +5,15 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__
 from CB_Sol_P import CB_P,CB_P_t
 from Ob_Met_Net_solmethods import Inner_check_vs_ys_NOP
 
-sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iJR904')))
-from MN_ijr904 import MN_ijr904
+sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iAF1260')))
+from MN_iaf1260 import MN_iaf1260
 import pandas as pd
 
-metnet = MN_ijr904
+metnet = MN_iaf1260
 
-metnet.KO = None
+metnet.target = .7
+
+print(metnet.FVA)
 
 cp = CB_P(network=metnet,k=1,log=True)
 

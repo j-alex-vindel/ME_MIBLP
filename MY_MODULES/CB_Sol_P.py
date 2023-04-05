@@ -74,7 +74,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     return
                 cur_obj = round(model.cbGet(GRB.Callback.MIPSOL_OBJBST),6)
                 cur_bd = round(model.cbGet(GRB.Callback.MIPSOL_OBJBND),6)
-                print(f"KO set: {knockset}")
+                print(f"KO set: {knockset} -> {[network.Rxn[i] for i in knockset]}")
                 print(f"Vbio: {model._voj[network.biomass]}")
                 print(f"Vche: {model._voj[network.chemical]}")
                 model._vi, inner_status = inner(model._inner, model._yoj)
@@ -96,6 +96,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                         sense = '>='
                         rhs = 1
                         lazycts.append((expr,sense,rhs))
+                    return
 
                 else:
                     vi_biom_val = model._vi[network.biomass]
@@ -122,7 +123,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                                     expr = model._vars[network.biomass] + (math.ceil(vij[network.biomass]*10)/10) *sum(ysum)
                                     lazycts.append((expr,sense,rhs))
                     
-                    if cur_obj - vi_chem_val > -1e-6 and flag:
+                    if cur_obj - vi_chem_val < 1e-6 and flag:
                         print(f"{' '*3}curobj - vichem > -1e-6 & flag \n")
                         model._pbnd = cur_obj
                         return
@@ -133,7 +134,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                         print(f"{' '*4}Update: pbdn = {vi_chem_val}")
                         print(f"{' '*4}Set Solution")
                         model.cbLazy(vi_chem_val >= model._vars[network.chemical] - cur_obj*(sum(model._varsy[g] for g in knockset)))
-                        model._pbnd = vi_chem_val
+                        # model._pbnd = vi_chem_val
                         # Updating the model variables
                         model._sv = model._vi
                         model._sy = model._yoj
