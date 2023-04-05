@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import pandas as pd
+import datetime
 
 def main(ks:list=None,name:str=None,sleep:int=None,file:str=None):
     for k in ks:
@@ -69,12 +70,26 @@ def latex_tables_pes(bacteria:str=None):
         txt.write(f'\n')   
     print('Tables Writen!!!')
 
+def pessimistic_run(bacteria:str=None,target:float=None,k:int=None,log:bool=False):
+
+    print(f"\n>> Running-> ../B_towork/pessimistic_{bacteria}.py")
+    print(f">> Target -> {target} Biomass")
+    print(f">> K -> {k}")
+    now = datetime.datetime.now()
+    if log:
+        os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k} > ../Results/LOG_P/log{k}{target}_{bacteria}_{now.day}.txt")
+    else:
+        os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k}")
+    
+    print(f"File Executed!! \n")
 
 if __name__ == '__main__':
-    ks = ['n']
-    names = ['iJR904','iJO1366','iAF1260']
-    sleep = 5
-    file = f"full_run"
-    for name in names:
-        main(ks=ks,name=name,sleep=sleep,file=file)
-        
+    # ks = ['n']
+    # names = ['iJR904','iJO1366','iAF1260']
+    # sleep = 5
+    # file = f"full_run"
+    # for name in names:
+    #     main(ks=ks,name=name,sleep=sleep,file=file)
+    targets = [.7,.5,.4,.3,.1]
+    for tgt in targets:
+        pessimistic_run(bacteria='iaf1260',target=tgt,k=2,log=True)

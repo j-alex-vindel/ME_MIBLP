@@ -10,26 +10,35 @@ from MN_iaf1260 import MN_iaf1260
 import pandas as pd
 
 metnet = MN_iaf1260
+tgt = float(sys.argv[1])
+metnet.target = tgt
+k = int(sys.argv[2])
+print(f"FVA v[b] ={metnet.FVA[metnet.biomass]}")
+print(f"FVA v[c] ={metnet.FVA[metnet.chemical]}")
 
-metnet.target = .7
-
-print(metnet.FVA)
-
-cp = CB_P(network=metnet,k=1,log=True)
-
-
-ccc = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='chemical')
-
-ccb = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='biomass')
-
-r = {'V_index':[metnet.biomass,     metnet.biomass,       metnet.chemical,         metnet.chemical],
-     'Name':[metnet.Rxn[metnet.biomass],metnet.Rxn[metnet.biomass],metnet.Rxn[metnet.chemical],metnet.Rxn[metnet.chemical]],
-    'CB_P':[cp.Vs[metnet.biomass],  cp.Vs[metnet.biomass], cp.Vs[metnet.chemical], cp.Vs[metnet.chemical]   ],
-     'IOF':[ccb.OF,                 ccc.OF,                ccb.OF                , ccc.OF],
-     'IC':[ccb.Biomass,             ccc.Biomass,           ccb.Chemical,            ccc.Chemical]}
+# cp = CB_P(network=metnet,k=1,log=True)
 
 
-c1p = CB_P(network=metnet,k=2,log=True)
+# ccc = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='chemical')
+
+# ccb = Inner_check_vs_ys_NOP(network=metnet,result_cb=cp,criteria='ys',objective='biomass')
+
+# r = {'V_index':[metnet.biomass,     metnet.biomass,       metnet.chemical,         metnet.chemical],
+#      'Name':[metnet.Rxn[metnet.biomass],metnet.Rxn[metnet.biomass],metnet.Rxn[metnet.chemical],metnet.Rxn[metnet.chemical]],
+#     'CB_P':[cp.Vs[metnet.biomass],  cp.Vs[metnet.biomass], cp.Vs[metnet.chemical], cp.Vs[metnet.chemical]   ],
+#      'IOF':[ccb.OF,                 ccc.OF,                ccb.OF                , ccc.OF],
+#      'IC':[ccb.Biomass,             ccc.Biomass,           ccb.Chemical,            ccc.Chemical]}
+
+# df = pd.DataFrame.from_dict(r)
+# df.round(decimals=5)
+# print(f" ")
+# print(f">>Strategy {cp.Strategy} -> {[metnet.Rxn.index(i) for i in cp.Strategy]}\n")
+# print(f">> Soltype {cp.Soltype}")
+# print(df.to_markdown())
+# print(f" ")
+
+
+c1p = CB_P(network=metnet,k=k,log=True)
 
 cc1c = Inner_check_vs_ys_NOP(network=metnet,result_cb=c1p,criteria='ys',objective='chemical')
 
@@ -41,14 +50,6 @@ r1 = {'V_index':[metnet.biomass,     metnet.biomass,       metnet.chemical,     
      'IOF':[cc1b.OF,                 cc1c.OF,                cc1b.OF                , cc1c.OF],
      'IC':[cc1b.Biomass,             cc1c.Biomass,           cc1b.Chemical,            cc1c.Chemical]}
 
-
-df = pd.DataFrame.from_dict(r)
-df.round(decimals=5)
-print(f" ")
-print(f">>Strategy {cp.Strategy} -> {[metnet.Rxn.index(i) for i in cp.Strategy]}\n")
-print(f">> Soltype {cp.Soltype}")
-print(df.to_markdown())
-print(f" ")
 
 
 df1 = pd.DataFrame.from_dict(r1)

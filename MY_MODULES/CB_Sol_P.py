@@ -110,7 +110,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     # bestknownchem = cur_obj
                     flag = True
                     if abs(model._vi[network.biomass] - model._voj[network.biomass]) > 1e-6:
-                            print(f"{' '*3}|vi[b] - vo[b] > 1e-6 \n")
+                            print(f"{' '*3}|vi[b] - vo[b]| > 1e-6 \n")
                             flag = False
                             for comb in ki:
                                 model.cbLazy(vi_biom_val <= model._vars[network.biomass] +
