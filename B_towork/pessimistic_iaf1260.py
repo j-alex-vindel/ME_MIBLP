@@ -37,7 +37,6 @@ print(f"FVA v[c] ={metnet.FVA[metnet.chemical]}")
 # print(df.to_markdown())
 # print(f" ")
 
-
 c1p = CB_P(network=metnet,k=k,log=True)
 
 cc1c = Inner_check_vs_ys_NOP(network=metnet,result_cb=c1p,criteria='ys',objective='chemical')

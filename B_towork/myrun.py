@@ -72,12 +72,15 @@ def latex_tables_pes(bacteria:str=None):
 
 def pessimistic_run(bacteria:str=None,target:float=None,k:int=None,log:bool=False):
 
+    dw = {0:'mo',1:'tu',2:'we',3:'th',4:'fr',5:'sa',5:'su'}
+
     print(f"\n>> Running-> ../B_towork/pessimistic_{bacteria}.py")
     print(f">> Target -> {target} Biomass")
     print(f">> K -> {k}")
+    print(f">> Log file -> {log}")
     now = datetime.datetime.now()
     if log:
-        os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k} > ../Results/LOG_P/log_{bacteria}_{k}{int(100*target)}_{now.day}.txt")
+        os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k} > ../Results/LOG_P/log_{bacteria}_{k}{int(100*target)}_{dw[now.weekday()]}.txt")
     else:
         os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k}")
     
@@ -91,5 +94,7 @@ if __name__ == '__main__':
     # for name in names:
     #     main(ks=ks,name=name,sleep=sleep,file=file)
     targets = [.7,.5,.4,.3,.1]
+    ks = [1,2]
     for tgt in targets:
-        pessimistic_run(bacteria='iaf1260',target=tgt,k=2,log=True)
+        for k in ks:
+            pessimistic_run(bacteria='iaf1260',target=tgt,k=k,log=True)

@@ -21,11 +21,11 @@ S   = data_iaf1260[iaf1260]['S']
 # from  iAF1260_FBA_Mu_Min.ipynb
 # Change Biological Assumptions
 
-print("Before Changing Biological Params")
+# print("Before Changing Biological Params")
 
-print(f"->>Glucose LB: {LB[rxn.index('EX_glc__D_e')]:.5}; UB:{UB[rxn.index('EX_glc__D_e')]:.5}")
-print(f"->>Oxigen LB: {LB[rxn.index('EX_o2_e')]:.5}; UB:{UB[rxn.index('EX_o2_e')]:.5}")
-print(f"->>ATPM LB: {LB[rxn.index('ATPM')]:.5}; UB:{UB[rxn.index('ATPM')]:.5}")
+# print(f"->>Glucose LB: {LB[rxn.index('EX_glc__D_e')]:.5}; UB:{UB[rxn.index('EX_glc__D_e')]:.5}")
+# print(f"->>Oxigen LB: {LB[rxn.index('EX_o2_e')]:.5}; UB:{UB[rxn.index('EX_o2_e')]:.5}")
+# print(f"->>ATPM LB: {LB[rxn.index('ATPM')]:.5}; UB:{UB[rxn.index('ATPM')]:.5}")
 
 
 LB[rxn.index('EX_glc__D_e')] = -10
