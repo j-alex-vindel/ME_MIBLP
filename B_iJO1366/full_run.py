@@ -41,10 +41,11 @@ points = {'MB':[],
 
 while target > 0:
     metnet.target = target
+    print(f"Target: {metnet.target}")
     print(f"Minprod: {metnet.minprod}")
-    m = MILP_sol_OP(network=metnet,k=2)
-    c = CB_sol_OP(network=metnet,k=2)
-    p = CB_P(network=metnet,k=2)
+    m = MILP_sol_OP(network=metnet,k=2,log=False)
+    c = CB_sol_OP(network=metnet,k=2,log=False)
+    p = CB_P(network=metnet,k=2,log=False)
     m_bio = m.Vs[metnet.biomass]
     m_che = m.Vs[metnet.chemical]
     c_bio = c.Vs[metnet.biomass]

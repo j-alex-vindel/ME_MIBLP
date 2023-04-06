@@ -3,6 +3,7 @@ import sys
 import time
 import pandas as pd
 import datetime
+import matplotlib.pyplot as plt
 
 def main(ks:list=None,name:str=None,sleep:int=None,file:str=None):
     for k in ks:
@@ -86,15 +87,122 @@ def pessimistic_run(bacteria:str=None,target:float=None,k:int=None,log:bool=Fals
     
     print(f"File Executed!! \n")
 
+def tables_md_tex(entry=None):
+    df,name = entry
+    df[f'biomass pct'] = [f"{int(i*100)}%" for i in df['tgt']]
+    df_b = df[['biomass pct','Bio','Mys','MB','ICB_mb','ICC_mb','Cys','CB','ICB_cb','ICC_cb','Pys','PB','ICB_pb','ICC_pb']]
+    df_c = df[['biomass pct','Che','Mys','MC','ICB_mc','ICC_mc','Cys','CC','ICB_cc','ICC_cc','Pys','PC','ICB_pc','ICC_pc']]
+
+    file_b = f"../Results/Latex_tables/Full Detail/Biomass_{name}_k2.txt"
+    isfile_b = os.path.exists(file_b)
+    if not isfile_b:
+        with open(file_b,'w+') as fb:
+            fb.write(f"======= {name} ============")
+            fb.write(f"======= Biomass ===========")
+            fb.write(" ")
+            fb.write(f"\n")
+            fb.write(df_b.to_markdown())
+            fb.write(" ")
+            fb.write(f"\n")
+            fb.write(df_b.to_latex())
+    
+    file_c = f"../Results/Latex_tables/Full Detail/Chemical_{name}_k2.txt"
+    isfile_c = os.path.exists(file_c)
+    if not isfile_c:
+        with open(file_c,"w+") as fc:
+            fc.write(f"======= {name} ============")
+            fc.write(f"======= Chemical ===========")
+            fc.write(" ")
+            fc.write(f"\n")
+            fc.write(df_c.to_markdown())
+            fc.write(" ")
+            fc.write(f"\n")
+            fc.write(df_c.to_latex())
+            
+    fx = f"../Results/Excel_files/{name}_summary_k2.xlsx"
+    
+    with pd.ExcelWriter(fx,mode='w') as writer:
+
+        df.to_excel(writer,sheet_name="Summary")
+        df_b.to_excel(writer,sheet_name='Biomass')
+        df_c.to_excel(writer,sheet_name='Chemical')
+
+def txttables(entry,file):
+    df,name = entry
+    dfp = df[["biomass pct",'PB','PC','ICB_pb','ICB_pc','ICC_pb','ICC_pc','Pys']]
+    dfc = df[["biomass pct",'CB','CC','ICB_cb','ICB_cc','ICC_cb','ICC_cc','Cys']]
+    dfm = df[["biomass pct",'MB','MC','ICB_mb','ICB_mc','ICC_mb','ICC_mc','Mys']]
+    with open(file,mode='a') as f:
+        f.write(f"\n>>> Bacteria {name}\n")
+        f.write(f">>> Callbacks - Pessimistic")
+        f.write(f"  \n")
+        f.write(dfp.to_markdown())
+        f.write(f" \n")
+
+        f.write(f">>> Bacteria {name}\n")
+        f.write(f">>> Callbacks - Optimistic")
+        f.write(f"  \n")
+        f.write(dfc.to_markdown())
+        f.write(f" \n")
+
+        f.write(f">>> Bacteria {name}\n")
+        f.write(f">>> MILP - Optimistic")
+        f.write(f"  \n")
+        f.write(dfm.to_markdown())
+        f.write(f" \n")
+        fx = f"../Results/Excel_files/{name}_summary_k2.xlsx"
+        with pd.ExcelWriter(fx, mode='a', engine="openpyxl") as writer:
+            dfp.to_excel(writer,sheet_name = 'Pessimistic-CB')
+            dfc.to_excel(writer,sheet_name = 'Optimistic-CB')
+            dfm.to_excel(writer,sheet_name = 'MILP')
+
+def normgraphs(entry):
+    df,name = entry
+    nb = [i/max(df.Bio) for i in df.Bio]
+    nc = [i/max(df.Che) for i in df.Che]
+
+    nmb = [i/max(df.MB) for i in df.MB]
+    nmc = [i/max(df.MC) for i in df.MC]
+
+    ncb = [i/max(df.CB) for i in df.CB]
+    ncc = [i/max(df.CC) for i in df.CC]
+    
+    npb = [i/max(df.PB) for i in df.PB]
+    npc = [i/max(df.PC) for i in df.PC]
+
+    fig,ax = plt.subplots()
+    plt.plot(nb,nc,linestyle='dotted',c='grey')
+
+    ax.set(xlim=(0,1.01),ylim=(0,1.01))
+    ax.set_title(f"Strain {name} ")
+    plt.xlabel(r""" % Biomass production $mmol/g(Dw)h$""")
+    plt.ylabel(r""" % Chemical production $mmol/g(Dw)h$""")
+    plt.scatter(nmb,nmc,marker='x',label="MILP",s=65,c='black')
+    plt.scatter(ncb,ncc,marker='d',label="CB_O",s=60,c='teal')
+    plt.scatter(npb,npc,marker='o',label="CB_P",s=60,c='red')
+    ax.legend()
+    plt.savefig(f"../Results/Graphs/NN_FE_{name}.png")
+
 if __name__ == '__main__':
-    # ks = ['n']
-    # names = ['iJR904','iJO1366','iAF1260']
-    # sleep = 5
-    # file = f"full_run"
-    # for name in names:
-    #     main(ks=ks,name=name,sleep=sleep,file=file)
-    targets = [.7,.5,.4,.3,.1]
-    ks = [1,2]
-    for tgt in targets:
-        for k in ks:
-            pessimistic_run(bacteria='iaf1260',target=tgt,k=k,log=True)
+    ks = ['n']
+    strains = ['iJR904','iJO1366','iAF1260']
+    sleep = 5
+    file = f"full_run"
+    fd_file = f"../Results/EcoliTables.txt"
+    for name in strains:
+        main(ks=ks,name=name,sleep=sleep,file=file)
+        df_file = f"../Results/Envelopes/FD_OP_{name}.csv"
+        df = pd.read_csv(df_file)
+        entry = (df,name)
+        tables_md_tex(entry)
+        normgraphs(entry)
+        txttables(entry,fd_file)
+        df = None
+        print(f">>> First Strain Completed!!!")
+        time.sleep(15)
+        
+    # targets = [.7,.5,.4,.3,.1]
+    # ks = [1,2]
+    # for tgt in targets:
+    #     for k in ks:
+    #         pessimistic_run(bacteria='iaf1260',target=tgt,k=k,log=True)
