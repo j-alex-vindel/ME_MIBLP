@@ -4,17 +4,18 @@ import time
 import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
+from itertools import product
 
-def main(ks:list=None,name:str=None,sleep:int=None,file:str=None):
-    for k in ks:
-        # os.system(f"python ../A_modules/{sys.argv[1]}.py")
-        print(f">> Folder {name}")
-        print(f">> Running -> ../B_{name}/{file}.py")
+def main(ks:int=None,name:str=None,sleep:int=None,file:str=None):
+    
+    # os.system(f"python ../A_modules/{sys.argv[1]}.py")
+    print(f">> Folder {name}")
+    print(f">> Running -> ../B_{name}/{file}.py")
 
-        os.system(f"python ../B_{name}/{file}.py")
-        print(f'>> Resting for {sleep}')
-        time.sleep(sleep)
-        print(f">> Ready to start over")
+    os.system(f"python ../B_{name}/{file}.py {ks}")
+    print(f'>> Resting for {sleep}')
+    time.sleep(sleep)
+    print(f">> Ready to start over")
     
     print('Run Completed')
 
@@ -71,7 +72,7 @@ def latex_tables_pes(bacteria:str=None):
         txt.write(f'\n')   
     print('Tables Writen!!!')
 
-def pessimistic_run(bacteria:str=None,target:float=None,k:int=None,log:bool=False):
+def pessimistic_run(bacteria:str=None,target:float=None,k:int=None,log:bool=False,version:int=None):
 
     dw = {0:'mo',1:'tu',2:'we',3:'th',4:'fr',5:'sa',5:'su'}
 
@@ -80,20 +81,22 @@ def pessimistic_run(bacteria:str=None,target:float=None,k:int=None,log:bool=Fals
     print(f">> K -> {k}")
     print(f">> Log file -> {log}")
     now = datetime.datetime.now()
+    txt_file = f"../Results/LOG_P/log_{bacteria}_{k}{int(100*target)}_{dw[now.weekday()]}{version}.txt"
+
     if log:
-        os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k} > ../Results/LOG_P/log_{bacteria}_{k}{int(100*target)}_{dw[now.weekday()]}.txt")
+        os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k} > {txt_file}")
     else:
         os.system(f"python ../B_towork/pessimistic_{bacteria}.py {target} {k}")
     
     print(f"File Executed!! \n")
 
 def tables_md_tex(entry=None):
-    df,name = entry
+    df,name,ko = entry
     df[f'biomass pct'] = [f"{int(i*100)}%" for i in df['tgt']]
     df_b = df[['biomass pct','Bio','Mys','MB','ICB_mb','ICC_mb','Cys','CB','ICB_cb','ICC_cb','Pys','PB','ICB_pb','ICC_pb']]
     df_c = df[['biomass pct','Che','Mys','MC','ICB_mc','ICC_mc','Cys','CC','ICB_cc','ICC_cc','Pys','PC','ICB_pc','ICC_pc']]
 
-    file_b = f"../Results/Latex_tables/Full Detail/Biomass_{name}_k2.txt"
+    file_b = f"../Results/Latex_tables/Full Detail/Biomass_{name}_{ko}.txt"
     isfile_b = os.path.exists(file_b)
     if not isfile_b:
         with open(file_b,'w+') as fb:
@@ -106,7 +109,7 @@ def tables_md_tex(entry=None):
             fb.write(f"\n")
             fb.write(df_b.to_latex())
     
-    file_c = f"../Results/Latex_tables/Full Detail/Chemical_{name}_k2.txt"
+    file_c = f"../Results/Latex_tables/Full Detail/Chemical_{name}_{ko}.txt"
     isfile_c = os.path.exists(file_c)
     if not isfile_c:
         with open(file_c,"w+") as fc:
@@ -119,7 +122,7 @@ def tables_md_tex(entry=None):
             fc.write(f"\n")
             fc.write(df_c.to_latex())
             
-    fx = f"../Results/Excel_files/{name}_summary_k2.xlsx"
+    fx = f"../Results/Excel_files/{name}_summary_{ko}.xlsx"
     
     with pd.ExcelWriter(fx,mode='w') as writer:
 
@@ -128,10 +131,10 @@ def tables_md_tex(entry=None):
         df_c.to_excel(writer,sheet_name='Chemical')
 
 def txttables(entry,file):
-    df,name = entry
-    dfp = df[["biomass pct",'PB','PC','ICB_pb','ICB_pc','ICC_pb','ICC_pc','Pys']]
-    dfc = df[["biomass pct",'CB','CC','ICB_cb','ICB_cc','ICC_cb','ICC_cc','Cys']]
-    dfm = df[["biomass pct",'MB','MC','ICB_mb','ICB_mc','ICC_mb','ICC_mc','Mys']]
+    df,name,ko = entry
+    dfp = df[["biomass pct",'PB','PC','ICB_pb','ICB_pc','ICC_pb','ICC_pc','Pys','Pt']]
+    dfc = df[["biomass pct",'CB','CC','ICB_cb','ICB_cc','ICC_cb','ICC_cc','Cys','Ct']]
+    dfm = df[["biomass pct",'MB','MC','ICB_mb','ICB_mc','ICC_mb','ICC_mc','Mys','Mt']]
     with open(file,mode='a') as f:
         f.write(f"\n>>> Bacteria {name}\n")
         f.write(f">>> Callbacks - Pessimistic")
@@ -150,7 +153,7 @@ def txttables(entry,file):
         f.write(f"  \n")
         f.write(dfm.to_markdown())
         f.write(f" \n")
-        fx = f"../Results/Excel_files/{name}_summary_k2.xlsx"
+        fx = f"../Results/Excel_files/{name}_summary_{ko}.xlsx"
         with pd.ExcelWriter(fx, mode='a', engine="openpyxl") as writer:
             dfp.to_excel(writer,sheet_name = 'Pessimistic-CB')
             dfc.to_excel(writer,sheet_name = 'Optimistic-CB')
@@ -184,25 +187,31 @@ def normgraphs(entry):
     plt.savefig(f"../Results/Graphs/NN_FE_{name}.png")
 
 if __name__ == '__main__':
-    ks = ['n']
+    ks = [1,2,3]
     strains = ['iJR904','iJO1366','iAF1260']
     sleep = 5
     file = f"full_run"
-    fd_file = f"../Results/EcoliTables.txt"
-    for name in strains:
-        main(ks=ks,name=name,sleep=sleep,file=file)
-        df_file = f"../Results/Envelopes/FD_OP_{name}.csv"
-        df = pd.read_csv(df_file)
-        entry = (df,name)
-        tables_md_tex(entry)
-        normgraphs(entry)
-        txttables(entry,fd_file)
-        df = None
-        print(f">>> First Strain Completed!!!")
-        time.sleep(15)
-        
+    
+    for ko in ks:
+        fd_file = f"../Results/EcoliTables_{ko}_w.txt"
+        for strain in strains:
+            
+            main(ks=ko,name=strain,sleep=sleep,file=file)
+            df_file = f"../Results/Envelopes/FD_OP_k{ko}{strain}_w.csv"
+            df = pd.read_csv(df_file)
+            entry = (df,strain,ko)
+            tables_md_tex(entry)
+            normgraphs(entry)
+            txttables(entry,fd_file)
+            df = None
+            print(f">>> First Strain Completed!!!")
+            time.sleep(15)
+            
     # targets = [.7,.5,.4,.3,.1]
     # ks = [1,2]
     # for tgt in targets:
     #     for k in ks:
     #         pessimistic_run(bacteria='iaf1260',target=tgt,k=k,log=True)
+    # tgt = .7
+    # k = 2
+    # pessimistic_run(bacteria='ijr904',target=tgt,k=2,log=True,version=4)

@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 metnet = MN_iaf1260
 
 target = 1.0
-
+ko = int(sys.argv[1])
 
 points = {'MB':[],
           'MC':[],
@@ -24,6 +24,9 @@ points = {'MB':[],
           'Mys':[],
           'Cys':[],
           'Pys':[],
+          'Mt':[],
+          'Ct':[],
+          'Pt':[],
           'ICB_mb':[],
           'ICC_mb':[],
           'ICB_mc':[],
@@ -43,9 +46,9 @@ while target > 0:
     metnet.target = target
     print(f"Target: {metnet.target}")
     print(f"Minprod: {metnet.minprod}")
-    m = MILP_sol_OP(network=metnet,k=2,log=False)
-    c = CB_sol_OP(network=metnet,k=2,log=False)
-    p = CB_P(network=metnet,k=2,log=False)
+    m = MILP_sol_OP(network=metnet,k=ko,log=False)
+    c = CB_sol_OP(network=metnet,k=ko,log=False)
+    p = CB_P(network=metnet,k=ko,log=False)
     m_bio = m.Vs[metnet.biomass]
     m_che = m.Vs[metnet.chemical]
     c_bio = c.Vs[metnet.biomass]
@@ -54,7 +57,10 @@ while target > 0:
     c_che = c.Vs[metnet.chemical]
     bio = metnet.FVA[metnet.biomass]
     che = metnet.FVA[metnet.chemical]
-    
+    mt = m.Time
+    ct = c.Time
+    pt = p.Time
+
     icb_m = Inner_check_vs_ys_NOP(network=metnet,result_milp=m,criteria='ys',objective='biomass')
     icc_m = Inner_check_vs_ys_NOP(network=metnet,result_milp=m,criteria='ys',objective='chemical')
     
@@ -78,6 +84,10 @@ while target > 0:
     points['Cys'].append(c.Strategy)
     points['Pys'].append(p.Strategy)
 
+    points['Mt'].append(mt)
+    points['Ct'].append(ct)
+    points['Pt'].append(pt)
+
     points['ICB_mb'].append(icb_m.Biomass)
     points['ICC_mb'].append(icc_m.Biomass)
     points['ICB_mc'].append(icb_m.Chemical)
@@ -100,7 +110,7 @@ rdf = pd.DataFrame.from_dict(points)
 rdf_r = rdf.round(decimals=5)
 
 
-file_name_r = f"../Results/Envelopes/FD_OP_{metnet.Name}.csv"
+file_name_r = f"../Results/Envelopes/FD_OP_k{ko}_{metnet.Name}_w.csv"
 
 isfile_r = os.path.exists(file_name_r)
 
@@ -118,5 +128,5 @@ plt.scatter(rdf_r['MB'].to_list(),rdf_r['MC'].to_list(),marker='x',label="MILP",
 plt.scatter(rdf_r['CB'].to_list(),rdf_r['CC'].to_list(),marker='d',label="CB_O",s=60,c='teal')
 plt.scatter(rdf_r['PB'].to_list(),rdf_r['PC'].to_list(),marker='o',label="CB_P",s=60,c='red')
 ax.legend()
-plt.savefig(f"../Results/Graphs/NON_FE_{metnet.Name}.png")
+plt.savefig(f"../Results/Graphs/NON_FE_k{ko}_{metnet.Name}_w.png")
 

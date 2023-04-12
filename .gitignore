@@ -17,3 +17,4 @@ B_towork/test.lp
 B_towork/test*.lp
 B_towork/log*.txt
 B_towork/pes*.txt
+B_towork/*.txt
