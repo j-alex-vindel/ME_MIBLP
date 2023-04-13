@@ -160,7 +160,7 @@ def txttables(entry,file):
             dfm.to_excel(writer,sheet_name = 'MILP')
 
 def normgraphs(entry):
-    df,name = entry
+    df,name,ko = entry
     nb = [i/max(df.Bio) for i in df.Bio]
     nc = [i/max(df.Che) for i in df.Che]
 
@@ -184,7 +184,7 @@ def normgraphs(entry):
     plt.scatter(ncb,ncc,marker='d',label="CB_O",s=60,c='teal')
     plt.scatter(npb,npc,marker='o',label="CB_P",s=60,c='red')
     ax.legend()
-    plt.savefig(f"../Results/Graphs/NN_FE_{name}.png")
+    plt.savefig(f"../Results/Graphs/NN_FE_{name}_k{ko}.png")
 
 if __name__ == '__main__':
     ks = [1,2,3]
@@ -197,7 +197,7 @@ if __name__ == '__main__':
         for strain in strains:
             
             main(ks=ko,name=strain,sleep=sleep,file=file)
-            df_file = f"../Results/Envelopes/FD_OP_k{ko}{strain}_w.csv"
+            df_file = f"../Results/Envelopes/FD_OP_k{ko}_{strain}_w.csv"
             df = pd.read_csv(df_file)
             entry = (df,strain,ko)
             tables_md_tex(entry)
