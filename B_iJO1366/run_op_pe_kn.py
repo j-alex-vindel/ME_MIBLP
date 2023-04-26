@@ -5,11 +5,11 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__
 
 from CB_Sol_P import CB_P
 from Ob_Met_Net_solmethods import CB_sol_2_NOP
-from Ob_Met_Net_ijo1366 import MetNet_ijo1366
+from MN_ijo1366 import MN_ijo1366
 
 import pandas as pd
 
-metnet = MetNet_ijo1366
+metnet = MN_ijo1366
 K = 1
 
 cb1_p = CB_P(network=metnet,k=K,log=True)

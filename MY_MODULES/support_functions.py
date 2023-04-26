@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from bs4 import BeautifulSoup
 import os
+import numpy as np
 
 FBA = NewType('FBA_vector',List[float])
 Result = namedtuple('Result',['MetNet','Strategy','Ys','Vs','Time','Soltype','Method'])
@@ -187,3 +188,48 @@ def do_them_graphs(obj,df,aproach):
             plt.savefig(metplot)
 
     return f" Graphs completed!"
+
+def brute_check_cons(network:object,solution:Result=None,matrix:bool=True,bounds:bool=True,file:str=None) -> None:
+    separator = '\n   '
+    separator1 = '\n   '
+    filename = file
+    with open(filename,"a") as outfile:
+        outfile.write(f"******* Analysis *******{separator}")
+        outfile.write(separator)
+        outfile.write(f"{'='*4} INFORMATION {'='*4}{separator1}")
+        outfile.write(f"Metabolic Network: {network.name}{separator1}")
+        outfile.write(f"Tgt: {int(network.target*100)}% K={len(solution.Strategy)}{separator1}")
+        outfile.write(f"KO Strategy: {solution.Strategy}{separator1}")
+        outfile.write(f"Biomas = {solution.Vs[network.biomas]} ; Chemical = {solution.Vs[network.chemical]}{separator1}" )
+        flows = np.asarray(solution.Vs)
+        rhs = network.S.dot(flows)
+        if matrix:
+            outfile.write(separator)
+            outfile.write(f"{'='*4} S*v = 0 {'='*4}{separator1}")
+            index_more_zero = np.where(rhs>network.infeas)
+            if index_more_zero[0].size != 0:
+                outfile.write(f"# Constraints (S) Violated: {len(index_more_zero[0])}{separator1}")
+                for i in index_more_zero[0]:
+                    outfile.write(f"Constraint -> {i}{separator1}")
+            else:
+                outfile.write(f"No Constraints (S) Violated all within {network.infeas} tolerance")
+
+        if bounds:
+            outfile.write(separator)
+            outfile.write(f"{'='*4} LB <= v <= UB {'='*4}{separator1}")
+            out_bnd_index = []
+            for i in network.M:
+                if not (network.LB[i] <= flows[i]) and (flows[i]<=network.UB[i]):
+                    out_bnd_index.append(i)
+
+            if not out_bnd_index:
+                outfile.write(f"No Bounds Violated\n")
+            else:
+                outfile.write(f"Bounds Violated{separator1}")
+                for i in out_bnd_index:
+                    outfile.write(f"Bound {i}: {network.LB[i]} <= {flows[i]} <= {network.UB[i]}{separator1}")
+        outfile.write('\n')
+        outfile.write('**********************************')
+        outfile.write('\n')
+        outfile.write('\n')
+    print(f"File saved! {len(solution.Strategy)} -> {filename}")
