@@ -197,10 +197,9 @@ def brute_check_cons(network:object,solution:Result=None,matrix:bool=True,bounds
         outfile.write(f"******* Analysis *******{separator}")
         outfile.write(separator)
         outfile.write(f"{'='*4} INFORMATION {'='*4}{separator1}")
-        outfile.write(f"Metabolic Network: {network.name}{separator1}")
-        outfile.write(f"Tgt: {int(network.target*100)}% K={len(solution.Strategy)}{separator1}")
+        outfile.write(f"Tgt: {int(network.target*100)}% - K: {len(solution.Strategy)}{separator1}")
         outfile.write(f"KO Strategy: {solution.Strategy}{separator1}")
-        outfile.write(f"Biomas = {solution.Vs[network.biomas]} ; Chemical = {solution.Vs[network.chemical]}{separator1}" )
+        outfile.write(f"v[b] = {solution.Vs[network.biomass]} - v[c] = {solution.Vs[network.chemical]}{separator1}" )
         flows = np.asarray(solution.Vs)
         rhs = network.S.dot(flows)
         if matrix:
@@ -219,7 +218,7 @@ def brute_check_cons(network:object,solution:Result=None,matrix:bool=True,bounds
             outfile.write(f"{'='*4} LB <= v <= UB {'='*4}{separator1}")
             out_bnd_index = []
             for i in network.M:
-                if not (network.LB[i] <= flows[i]) and (flows[i]<=network.UB[i]):
+                if (network.LB[i]-flows[i] >1e-6) or (flows[i] - network.UB[i]) > 1e-6:
                     out_bnd_index.append(i)
 
             if not out_bnd_index:

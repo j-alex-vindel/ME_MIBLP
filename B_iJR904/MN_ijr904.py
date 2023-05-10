@@ -50,4 +50,4 @@ knockout = [Rxn.index(i) for i in non_essentials]
 
 MN_ijr904 = Met_Net(S=S,LB=LB,UB=UB,Met=Met,Rxn=Rxn,biomass=biomas,chemical=chemical,Name=ijr904,KO=knockout)
 
-print(f"-> FBA biomass {MN_ijr904.FBA[MN_ijr904.biomass]:.5}")
+# print(f"-> FBA biomass {MN_ijr904.FBA[MN_ijr904.biomass]:.5}")

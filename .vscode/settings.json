@@ -2,6 +2,9 @@
     "python.analysis.extraPaths": [
         "./MY_MODULES",
         "./B_iJO1366",
-        "./B_iJO1366"
+        "./B_iJO1366",
+        "./B_iAF1260",
+        "./B_iJR904",
+        "./B_iJR904"
     ]
 }

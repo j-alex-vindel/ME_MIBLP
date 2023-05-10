@@ -157,7 +157,8 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
                     return
 # =============================================================================================================================                        
 
-        elif where == GRB.Callback.MIPNODE:
+        # elif where == GRB.Callback.MIPNODE:
+        elif 1==0:
             status = model.cbGet(GRB.Callback.MIPNODE_STATUS)
             if status == GRB.OPTIMAL:
                 # print(f'\nMIPNODE')
@@ -248,7 +249,7 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
     if network.KO is not None:
         m.addConstr(sum(1-cby[j] for j in network.KO) == k, name='knapsack')
         m.addConstr(sum(cby[j]for j in network.M) == len(network.M)-k,name='Essen')
-
+        # return to y[i] =1 for i essentials i not in KO
     elif network.KO is None:
         m.addConstr(sum(1-cby[j] for j in network.M) == k, name='knapsack')
 
@@ -291,18 +292,18 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
 
     if m.status == GRB.OPTIMAL:
         ys = [m.getVarByName('cby[%d]'%j).x for j in network.M]
-        vs = [m.getVarByName('cbv[%d]'%j).x for j in network.M]
+        vss = [m.getVarByName('cbv[%d]'%j).x for j in network.M]
         del_strat_cb = [network.Rxn[i] for i in network.M if ys[i] < .5]
         soltype = 'Optimal'
     elif m.status == GRB.TIME_LIMIT:
         ys = [m.getVarByName('cby[%d]'%j).x for j in network.M]
-        vs = [m.getVarByName('cbv[%d]'%j).x for j in network.M]
+        vss = [m.getVarByName('cbv[%d]'%j).x for j in network.M]
         del_strat_cb = [network.Rxn[i] for i in network.M if ys[i] < .5]
         soltype = 'Time_Limit'
 
     elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
         ys = ['all' for i in network.M]
-        vs = ['~' for i in network.M]
+        vss = ['~' for i in network.M]
         del_strat_cb = ['all']
         soltype = 'Infeasible'
     
@@ -321,9 +322,9 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
         filename = f"pess_log_k{k}_{network.Name}.lp"
         m.write(filename)
 
-    return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'CBO')
+    return Result_cb(network.Name,del_strat_cb,ys,vss,vij,cb_time,soltype,'CBO')
 
-def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result:
+def MILP_sol_OP(network:M_Network=None,k:Ks=None,ys=None,log:bool=True,speed:bool=False,threads:bool=False) -> Result:
     '''
     --------- Input -------------------------
     network      = Metabolic Network, default value None
@@ -366,8 +367,13 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
     # Variables
     v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
     vs = [v[i] for i in network.M]
+# ============================= Commented Section ===================
     y = m.addVars(network.M,vtype=GRB.BINARY,name='y')
-
+    #for i in network.M:
+    #    if ys[i] >= 1 -1e-6:
+    #        m.addConstr(y[i] >= 1 - 1e-6)
+    #    else:
+    #        m.addConstr(y[i] >= 0)
     # Dual Variables
     l = m.addVars(network.N,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='lambda')
     a1 = m.addVars(network.M,lb=0,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='alpha1')
@@ -379,16 +385,32 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
     
     # Objective
     m.setObjective((1*v[network.chemical]),GRB.MAXIMIZE)
-
+# ============================= Commented Section ===================
     if network.KO is not None:
     # Knapsack Constrs
-        m.addConstr((sum(y[j] for j in network.M) == len(network.M)-k), name='y_essentials')
-        m.addConstr(sum(1-y[j] for j in network.KO) == k, name='knapsack')
-    elif network.KO is None:
-        m.addConstr(sum(1-y[j] for j in network.M)  == k, name='knapsack')
-
+        #m.addConstr((sum(y[j] for j in network.M) == len(network.M)-k), name='y_essentials') 
+        #m.addConstrs(y[j] == 1 for j in network.M if j not in network.KO)
+        KOSum = 0
+        for i in network.M:
+            if i not in network.KO and ys[i] < 1 -1e-6: 
+                print("notko", i)
+            if i not in network.KO:
+                m.addConstr(y[i] >= 1)
+            if  i in network.KO: 
+                KOSum += ys[i]
+        print ("KOsum", KOSum)
+        alpha = 1-1e-6
+        m.addConstr(sum(y[j] for j in network.M if j in network.KO) >= len(network.KO)-k - alpha, name='knapsack1')
+        m.addConstr(sum(y[j] for j in network.M if j in network.KO) <= len(network.KO)-k + alpha, name='knapsack2')
+    #elif network.KO is None:
+    #    print(f"NO ko sEt")
+    #    m.addConstr(sum(1-y[j] for j in network.M)  == k, name='knapsack')
+    
+    # m.addConstr(y[174]==0)
+# ============================= Commented Section ===================
     # Stoichimetric Constrs
     m.addMConstr(network.S,vs,'=',network.b,name='Stoi')
+    
     # m.addConstrs((gp.quicksum(network.S[i,j] * v[j] for j in network.M) == network.b[i] for i in network.N),name='Stoichiometry')
     
     # Dual Objective
@@ -440,32 +462,33 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,
     if speed: m.Params.NodefileStart = 0.5
     if threads: m.Threads = 2
     m.optimize()
-
-    s = m.Runtime
+    
+    m_time = m.Runtime
     if m.status == GRB.OPTIMAL:
         chem = m.getObjective().getValue()
-        ys = [m.getVarByName('y[%d]'%j).x for j in network.M]
-        vs = [m.getVarByName('v[%d]'%j).x for j in network.M]
+        # ys = [m.getVarByName('y[%d]'%j).x for j in network.M]
+        vss = [m.getVarByName('v[%d]'%j).x for j in network.M]
         soltype = 'Optimal'
         del_strat = [network.Rxn[i] for i in network.M if ys[i] <.5]
 
     elif m.status == GRB.TIME_LIMIT:
-        ys = [m.getVarByName('my[%d]'%j).x for j in network.M]
-        vs = [m.getVarByName('mv[%d]'%j).x for j in network.M]
+        # ys = [m.getVarByName('my[%d]'%j).x for j in network.M]
+        vss = [m.getVarByName('mv[%d]'%j).x for j in network.M]
         del_strat = [network.Rxn[i] for i in network.M if ys[i] <.5]
         soltype = 'Time_limit'
     
     if m.status in (GRB.INFEASIBLE,GRB.INF_OR_UNBD,GRB.UNBOUNDED):
         # print('Model status: *** INFEASIBLE or UNBOUNDED ***')
         ys = ['$' for i in network.M]
-        vs = ['~' for i in network.M]
+        vss = ['~' for i in network.M]
+        soltype = 'Infeasible or Unbounded'
         # print('Chemical:',vs[network.chemical],sep=' ^ ')
         # print('Biomass:',vs[network.biomass],sep=' ^ ')
         del_strat = 'all'
 
     # print('*'*4,' FINISHED!!! ','*'*4)
-
-    return  Result(network.Name,del_strat,ys, vs, s,soltype,'MILPO')
+    # m.write("MILP_4-27.lp")
+    return  Result(network.Name,del_strat,ys, vss,m_time,soltype,'MILPO')
 
 def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result_milp:Result=None,criteria:str='both',objective:Inner_obj=None,log:bool=False) -> Result_inner:
     '''
@@ -534,9 +557,14 @@ def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result
     m = gp.Model()
 
     v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
-    vs = [v[i] for i in network.M]
+    v_s = [v[i] for i in network.M]
     m.setObjective((1*v[objct]),GRB.MAXIMIZE)
-    m.addMConstr(network.S,vs,'=',network.b,name='Stoi')
+        
+    out_s = [0 if abs(i)<1e-6 else (i,j) for i,j in enumerate([network.S.dot(vs) - network.b])]
+    # print(network.S.dot(vs) - network.b)
+    # print(out_s)
+    m.addMConstr(network.S,v_s,'=',network.b,name='Stoi')
+    # m.addConstr(v[network.biomass] >= network.minprod,name='minprod')
     
     if criteria == 'both':
         m.addConstrs((lb[j]*ys[j]<= v[j] for j in network.M),name='lb')
@@ -554,7 +582,9 @@ def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result
 
     elif criteria == 'ys':
         m.addConstrs((lb[j] * ys[j] <= v[j] for j in network.M),name='lb')
-
+        # for j in network.M:
+        #     if (lb[j]*ys[j] - vs[j] > 1e-6): print ("errorlb", j, lb[j], ys[j], vs[j])
+        #     if (ub[j]*ys[j] - vs[j] < -1e-6): print ("errorub", j, ub[j], ys[j], vs[j])
         m.addConstrs((ub[j] * ys[j] >= v[j] for j in network.M),name='ub')
     
     else:
@@ -568,13 +598,13 @@ def Inner_check_vs_ys_NOP(network:M_Network=None,result_cb:Result_cb=None,result
     m.optimize()
 
     if m.status == GRB.OPTIMAL:
-        vs =  [m.getVarByName('v[%s]'%a).x for a in network.M]
+        vss =  [m.getVarByName('v[%s]'%a).x for a in network.M]
         soltype = 'optimal'
     elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
-        vs = [1 if i == objct else 2000 for i in network.M]
+        vss = [2000 if i in [network.biomass,network.chemical] else 0 for i in network.M]
         soltype = 'Infeasible'
     
-    return Result_inner(vs[network.biomass],vs[network.chemical],soltype,mfrom,criteria,objective) 
+    return Result_inner(vss[network.biomass],vss[network.chemical],soltype,mfrom,criteria,objective) 
 
 
 

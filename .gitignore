@@ -19,3 +19,6 @@ B_towork/log*.txt
 B_towork/pes*.txt
 B_towork/*.txt
 B_iJR904/robustknock.py
+B_iJR904/*.txt
+B_iJR904/*.lp
+B_iJR904/fbacheck.py
