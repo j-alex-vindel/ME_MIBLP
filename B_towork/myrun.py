@@ -11,8 +11,11 @@ def main(arg1=None,arg2=None,name:str=None,sleep:int=None,file:str=None):
     # os.system(f"python ../A_modules/{sys.argv[1]}.py")
     print(f">> Folder {name}")
     print(f">> Running -> ../B_{name}/{file}.py")
+    if arg2 == None:
+        os.system(f"python ../B_{name}/{file}.py {arg1}")
+    else:   
+        os.system(f"python ../B_{name}/{file}.py {arg1} {arg2}")
 
-    os.system(f"python ../B_{name}/{file}.py {arg1} {arg2}")
     print(f'>> Resting for {sleep}')
     time.sleep(sleep)
     print(f">> Ready to start over")
@@ -24,11 +27,10 @@ if __name__ == '__main__':
     strains = ['ijo','ijr','iaf']
     checks = ['A','B','C']
     sleep = 5
-    file = f"methodscheck"
+    file = f"test_k"
     name = 'towork'
-    for pair in product(strains,checks):
-        ag1,ag2 = pair
-        main(arg1=ag1,arg2=ag2,name=name,sleep=sleep,file=file)
+    for strain in strains:
+        main(arg1=strain,name=name,sleep=sleep,file=file)
 
 
 

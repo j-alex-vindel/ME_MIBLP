@@ -38,7 +38,6 @@ def dataframeselector(df:pd.DataFrame=None,check:str=None):
     return t_df
 
 
-
 if len(sys.argv) <3:
     sys.exit('Insuficient arguments')
 else:
@@ -69,8 +68,8 @@ else:
           'Tgt':[],
           'K':[],
           'Method':[],
-          'ICB_Bio':[],
-          'ICC_Che':[],
+          'ICB_Bio':[], 
+          'ICB_Che':[],
           'ICC_Bio':[],
           'ICC_Che':[]}
     for pair in checkalgori(tdf):
@@ -81,9 +80,9 @@ else:
             metnet.target = target/100
             print(f"FBA [b]:{metnet.FBA[metnet.biomass]:.2}")
             print(f"FVA [b]:{metnet.FVA[metnet.biomass]:.2}")
-            optimistic = CB_sol_OP(network=metnet,k=k)
-            ocb = Inner_check_vs_ys_NOP(network=metnet,result_cb=optimistic,criteria='ys',objective='biomass')
-            occ = Inner_check_vs_ys_NOP(network=metnet,result_cb=optimistic,criteria='ys',objective='chemical')
+            optimistic = solver.CB_O(network=metnet,K=k)
+            ocb = solver.FBA_check(network=metnet,solution=optimistic,obj_v='biomass',c_params='ys')
+            occ = solver.FBA_check(network=metnet,solution=optimistic,obj_v='chemical',c_params='ys')
 
             results['C_Bio'].append(optimistic.Vs[metnet.biomass])
             results['C_Che'].append(optimistic.Vs[metnet.chemical])
@@ -101,9 +100,9 @@ else:
             metnet.target = target/100
             print(f"FBA [b]:{metnet.FBA[metnet.biomass]:.2}")
             print(f"FVA [b]:{metnet.FVA[metnet.biomass]:.2}")
-            pessimistic = CB_sol_OP(network=metnet,k=k)
-            pcb = Inner_check_vs_ys_NOP(network=metnet,result_cb=pessimistic,criteria='ys',objective='biomass')
-            pcc = Inner_check_vs_ys_NOP(network=metnet,result_cb=pessimistic,criteria='ys',objective='chemical')
+            pessimistic = solver.CB_P(network=metnet,K=k)
+            pcb = solver.FBA_check(network=metnet,solution=pessimistic,obj_v='biomass',c_params='ys')
+            pcc = solver.FBA_check(network=metnet,solution=pessimistic,obj_v='chemical',c_params='ys')
             
             results['C_Bio'].append(pessimistic.Vs[metnet.biomass])
             results['C_Che'].append(pessimistic.Vs[metnet.chemical])
@@ -117,10 +116,13 @@ else:
 
     cdf = pd.DataFrame.from_dict(results)
 
+    print(cdf.head(3))
+
     filename = f"../Results/Envelopes/Revised/DR/Revised_{metnet.Name[:3]}_C{check}.csv"
 
     cdf.to_csv(filename)
 
+    
         
 
 

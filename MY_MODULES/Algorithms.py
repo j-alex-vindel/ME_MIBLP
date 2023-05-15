@@ -1,3 +1,4 @@
+import sys
 import gurobipy as gp
 from gurobipy import GRB
 from typing import List, Type
@@ -26,6 +27,12 @@ class BilevelMethods:
     def __init__(self,log:bool=None):
         self.log = log
     
+    def info(self):
+
+        text = ''' Bilevel methods to solve Gene Knockouts  '''
+
+        return text
+
     def MILP(self,network:M_Network=None,K:int=None,yss:Vector=None) -> MethodResult:
         mub = copy.deepcopy(network.UB)
         mlb = copy.deepcopy(network.LB)
@@ -63,7 +70,7 @@ class BilevelMethods:
                     m.addConstr(y[i] >= 1)
                 if  i in network.KO: 
                     KOSum += yss[i]
-            print ("KOsum", KOSum)
+            # print ("KOsum", KOSum)
             alpha = 1-1e-6
             m.addConstr(sum(y[j] for j in network.M if j in network.KO) >= len(network.KO)-K - alpha, name='knapsack1')
             m.addConstr(sum(y[j] for j in network.M if j in network.KO) <= len(network.KO)-K + alpha, name='knapsack2')
@@ -74,7 +81,7 @@ class BilevelMethods:
         
         # Dual Objective
         m.addConstr((v[network.biomass] >= (sum(a1[j]*mub[j] - b1[j]*mlb[j] for j in network.M)
-        + sum(a2[j]*mub.UB[j] - b2[j]*mlb[j] for j in network.M))),name='dual-objective')
+        + sum(a2[j]*mub[j] - b2[j]*mlb[j] for j in network.M))),name='dual-objective')
         
         # Dual Constraints
         m.addConstrs((gp.quicksum(network.S.transpose()[i,j]*l[j] for j in network.N)
@@ -135,7 +142,7 @@ class BilevelMethods:
             soltype = 'Infeasible or Unbounded'
             del_strat = 'all'
         rys = self.__ysheuristic(mys)
-        self.r_m = MethodResult(network.Name,del_strat,vss,rys,m_time,soltype,'M')
+        self.r_m = MethodResult(network.Name,del_strat,vss,mys,m_time,soltype,'M')
         return self.r_m
 
     def CB_O(self,network:M_Network=None,K:int=None) -> MethodResult:
@@ -439,11 +446,12 @@ class BilevelMethods:
     def FBA_check(self,network:M_Network,solution:MethodResult=None,obj_v:str=None,c_params:str=None) -> Check:
         clb = copy.deepcopy(network.LB)
         cub = copy.deepcopy(network.UB)
-
+        
         clb[network.biomass] = network.minprod
         vs = copy.deepcopy(solution.Vs)
         cys = copy.deepcopy(solution.Ys)
 
+        # print(f"{len(cys)} -> {len(clb)} -> {len(cub)}")
         if obj_v == 'biomass':
             f_objective = network.biomass
         elif obj_v == 'chemical':
@@ -456,29 +464,33 @@ class BilevelMethods:
         v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
         v_s = [v[i] for i in network.M]
         m.setObjective((1*v[f_objective]),GRB.MAXIMIZE)
-            
+        m.update()
+        # print(len(m.getVars()))
+        # print(len([clb[j] * cys[j] for j in network.M]))    
         # out_s = [0 if abs(i)<1e-6 else (i,j) for i,j in enumerate([network.S.dot(vs) - network.b])]
         # print(network.S.dot(vs) - network.b)
         # print(out_s)
         m.addMConstr(network.S,v_s,'=',network.b,name='Stoi')
         m.addConstr(v[network.biomass] >= network.minprod,name='minprod')
         if c_params == 'both':
-            m.addConstrs((clb[j]*cys[j]<= v[j] for j in network.M),name='lb')
+            m.setAttr('LB',m.getVars(),[clb[j]*cys[j] for j in network.M])
+            m.setAttr('UB',m.getVars(),[cub[j]*cys[j] for j in network.M])
 
-            m.addConstrs((cub[j]*cys[j] >= v[j] for j in network.M),name='ub')
+            # m.addConstrs((clb[j]*cys[j]<= v[j] for j in network.M),name='lb')
+
+            # m.addConstrs((cub[j]*cys[j] >= v[j] for j in network.M),name='ub')
 
             m.addConstrs((v[j] == vs[j] for j in network.M),name='hards_vs')
         
         elif c_params == 'vs':
-            m.addConstrs((clb[j] <= v[j] for j in network.M),name='lb')
-
-            m.addConstrs((cub[j] >= v[j] for j in network.M),name='ub')
+            m.setAttr('LB',m.getVars(),[clb[j] for j in network.M])
+            m.setAttr('UB',m.getVars(),[cub[j] for j in network.M])
 
             m.addConstrs((v[j] == vs[j] for j in network.M),name='hards_vs')
 
         elif c_params == 'ys':
-            m.addConstrs((clb[j] * cys[j] <= v[j] for j in network.M),name='lb')
-            m.addConstrs((cub[j] * cys[j] >= v[j] for j in network.M),name='ub')
+            m.setAttr('LB',m.getVars(),[clb[j]*cys[j] for j in network.M])
+            m.setAttr('UB',m.getVars(),[cub[j]*cys[j] for j in network.M])
             # for j in network.M:
             #     if (lb[j]*ys[j] - vs[j] > 1e-6): print ("errorlb", j, lb[j], ys[j], vs[j])
             #     if (ub[j]*ys[j] - vs[j] < -1e-6): print ("errorub", j, ub[j], ys[j], vs[j])
@@ -498,7 +510,7 @@ class BilevelMethods:
             vss =  [m.getVarByName('v[%s]'%a).x for a in network.M]
             soltype = 'optimal'
         elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
-            vss = [network.M if i in[network.biomass,network.chemical] else 0 for i in network.M]
+            vss = [network.BM if i in[network.biomass,network.chemical] else 0 for i in network.M]
             soltype = 'Infeasible'
         self.r_c = Check(vss[network.biomass],vss[network.chemical],soltype,obj_v,c_params)
 
