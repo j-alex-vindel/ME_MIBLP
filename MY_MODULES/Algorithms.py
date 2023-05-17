@@ -33,7 +33,7 @@ class BilevelMethods:
 
         return text
 
-    def MILP(self,network:M_Network=None,K:int=None,yss:Vector=None) -> MethodResult:
+    def MILP(self,network:M_Network=None,K:int=None) -> MethodResult:
         mub = copy.deepcopy(network.UB)
         mlb = copy.deepcopy(network.LB)
         mlb[network.biomass] = network.minprod
@@ -60,20 +60,20 @@ class BilevelMethods:
     # ============================= Commented Section ===================
         if network.KO is not None:
         # Knapsack Constrs
-            #m.addConstr((sum(y[j] for j in network.M) == len(network.M)-k), name='y_essentials') 
-            #m.addConstrs(y[j] == 1 for j in network.M if j not in network.KO)
+            m.addConstr((sum(y[j] for j in network.M) == len(network.M)-K), name='y_essentials') 
+            m.addConstrs(y[j] == 1 for j in network.M if j not in network.KO)
             KOSum = 0
-            for i in network.M:
-                if i not in network.KO and yss[i] < 1 -1e-6: 
-                    print("notko", i)
-                if i not in network.KO:
-                    m.addConstr(y[i] >= 1)
-                if  i in network.KO: 
-                    KOSum += yss[i]
+            # for i in network.M:
+            #     if i not in network.KO and yss[i] < 1 -1e-6: 
+            #         print("notko", i)
+            #     if i not in network.KO:
+            #         m.addConstr(y[i] >= 1)
+            #     if  i in network.KO: 
+            #         KOSum += yss[i]
             # print ("KOsum", KOSum)
             alpha = 1-1e-6
-            m.addConstr(sum(y[j] for j in network.M if j in network.KO) >= len(network.KO)-K - alpha, name='knapsack1')
-            m.addConstr(sum(y[j] for j in network.M if j in network.KO) <= len(network.KO)-K + alpha, name='knapsack2')
+            # m.addConstr(sum(y[j] for j in network.M if j in network.KO) >= len(network.KO)-K - alpha, name='knapsack1')
+            # m.addConstr(sum(y[j] for j in network.M if j in network.KO) <= len(network.KO)-K + alpha, name='knapsack2')
 
     # ============================= Commented Section ===================
         # Stoichimetric Constrs
@@ -316,6 +316,7 @@ class BilevelMethods:
                 
                 if len(knockset) != K:
                     return
+                
                 cur_obj = model.cbGet(GRB.Callback.MIPSOL_OBJBST)
                 cur_bd = model.cbGet(GRB.Callback.MIPSOL_OBJBND)
 
