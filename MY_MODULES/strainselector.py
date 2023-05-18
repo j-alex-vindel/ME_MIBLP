@@ -19,7 +19,8 @@ def strainsele(strain:str=None) -> Met_Net:
         from MN_iaf1260 import MN_iaf1260
         met = MN_iaf1260
     return met
-    
+
+
 if __name__=="__main__":
     metnet = strainsele('iaf')
     print(metnet.Name)

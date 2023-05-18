@@ -43,16 +43,16 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         print(f"FBA [b]: {network.FBA[network.biomass]}")
         print(f"-- Pessimistic Approach -- \n")
 
-        lb = copy.deepcopy(network.LB)
-        ub = copy.deepcopy(network.UB)
-        minprod = copy.deepcopy(network.minprod)
-        lb[network.biomass] = minprod
+        plb = copy.deepcopy(network.LB)
+        pub = copy.deepcopy(network.UB)
+        pminprod = copy.deepcopy(network.minprod)
+        plb[network.biomass] = pminprod
 
         def inner(imodel, yoj:Vector):
             # global vij
 
-            imodel.setAttr('LB',imodel.getVars(),[lb[j]*yoj[j] for j in network.M])
-            imodel.setAttr('UB',imodel.getVars(),[ub[j]*yoj[j] for j in network.M])
+            imodel.setAttr('LB',imodel.getVars(),[plb[j]*yoj[j] for j in network.M])
+            imodel.setAttr('UB',imodel.getVars(),[pub[j]*yoj[j] for j in network.M])
             imodel.Params.OptimalityTol = network.infeas
             imodel.Params.IntFeasTol = network.infeas
             imodel.Params.FeasibilityTol = network.infeas
@@ -62,7 +62,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
             if status == GRB.OPTIMAL:
                 vij = [imodel.getVarByName('fv[%s]'%a).x for a in network.M] # rounded inner values
             elif status in (GRB.INFEASIBLE, GRB.UNBOUNDED, GRB.INF_OR_UNBD):
-                vij = [2000 if i == network.biomass else yoj[i] for i in network.M]
+                vij = [2000 if i in [network.biomass,network.chemical] else yoj[i] for i in network.M]
             return vij,status
 
         def lazycall(model,where):
@@ -127,7 +127,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                                     ysum = [model._varsy[j] for j in comb]
                                     expr = model._vars[network.biomass] + (math.ceil(model._vi[network.biomass]*10)/10) *sum(ysum)
                                     lazycts.append((expr,sense,rhs))
-                    
+                            return
                     if cur_obj - vi_chem_val < 1e-6 and flag:
                         # print(f"{' '*3}curobj - vi[c] < 1e-6 & flag \n")
                         # print(f"{' '*4}Update: pbdn = {vi_chem_val}")
@@ -154,7 +154,8 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                             ysum = [model._varsy[g] for g in knockset]
                             expr =  model._vars[network.chemical] - cur_obj*(sum(ysum))
                             lazycts.append((expr,sense,rhs))                       
-
+                        return
+                    
                     elif model._pbnd > vi_chem_val:
                         # print(f"\n{' '*3}pbnd > vi_chem \n")
                         # print(f"{' '*4}(sum{['y[%d]'%g for g in knockset]}) >= 1")
@@ -165,6 +166,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                             ysum = [model._varsy[j] for j in knockset]
                             expr = sum(ysum)
                             lazycts.append((expr,sense,rhs))
+                        return
     # =============================================================================================================================                        
             # elif where == GRB.Callback.MIP:
             #     # print(f'\nMIP')
@@ -259,14 +261,15 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         m.addMConstr(network.S,cbvs,'=',network.b,name='Stoi')
         # m.addConstrs((gp.quicksum(network.S[i,j]*cbv[j] for j in network.M) == 0 for i in network.N),name='Stoichiometry')
 
-        m.addConstr(cbv[network.biomass] >= minprod, name='target')
+        m.addConstr(cbv[network.biomass] >= pminprod, name='target')
 
-        m.addConstrs((lb[j]*cby[j] <= cbv[j] for j in network.M),name='LB')
-        m.addConstrs((cbv[j] <= ub[j]*cby[j] for j in network.M),name='UB')
+        m.addConstrs((plb[j]*cby[j] <= cbv[j] for j in network.M),name='LB')
+        m.addConstrs((cbv[j] <= pub[j]*cby[j] for j in network.M),name='UB')
         
         if network.KO is not None:
             m.addConstr(sum(1-cby[j] for j in network.KO) == k, name='knapsack')
-            m.addConstr(sum(cby[j]for j in network.M) == len(network.M)-k,name='Essen')
+            # m.addConstr(sum(cby[j]for j in network.M) == len(network.M)-k,name='Essen')
+            m.addConstrs((cby[j]==1 for j in network.M if j not in network.KO),name='essen')
         elif network.KO is None:
             m.addConstr(sum(1-cby[j] for j in network.M) == k, name='knapsack')
 
@@ -282,7 +285,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         imodel.addMConstr(network.S,fvs,'=',network.b,name='Stoi')
         # imodel.addConstrs((gp.quicksum(network.S[i,j]*fv[j] for j in network.M) == 0 for i in network.N),name='S2')
         
-        imodel.addConstr(fv[network.biomass] >= minprod, name='target2')
+        imodel.addConstr(fv[network.biomass] >= pminprod, name='target2')
 
         imodel.update()
         

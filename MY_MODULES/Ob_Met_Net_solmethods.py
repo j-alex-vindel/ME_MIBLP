@@ -248,7 +248,7 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
     
     if network.KO is not None:
         m.addConstr(sum(1-cby[j] for j in network.KO) == k, name='knapsack')
-        m.addConstr(sum(cby[j]for j in network.M) == len(network.M)-k,name='Essen')
+        m.addConstrs((cby[j]==1 for j in network.M if j not in network.KO),name='Essen')
         # return to y[i] =1 for i essentials i not in KO
     elif network.KO is None:
         m.addConstr(sum(1-cby[j] for j in network.M) == k, name='knapsack')

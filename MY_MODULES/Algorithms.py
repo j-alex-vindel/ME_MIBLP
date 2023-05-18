@@ -8,7 +8,7 @@ from Ob_Met_Net import Met_Net
 from itertools import combinations
 import math 
 
-MethodResult = namedtuple('Result',['MetNet','Strategy','Vs','Ys','Time','Soltype','Method'])
+MethodResult = namedtuple('Result',['MetNet','Strategy','Vs','Ys','KO_index','Time','Soltype','Method'])
 Check = namedtuple('Check',['Biomass','Chemical','Soltype','of','Criteria'])
 M_Network = Type[Met_Net]
 Vector = List[int]
@@ -60,8 +60,8 @@ class BilevelMethods:
     # ============================= Commented Section ===================
         if network.KO is not None:
         # Knapsack Constrs
-            m.addConstr((sum(y[j] for j in network.M) == len(network.M)-K), name='y_essentials') 
-            m.addConstrs(y[j] == 1 for j in network.M if j not in network.KO)
+            m.addConstr((sum(1-y[j] for j in network.KO) == K), name='nonEssen') 
+            m.addConstrs((y[j] == 1 for j in network.M if j not in network.KO),name='Essen')
             KOSum = 0
             # for i in network.M:
             #     if i not in network.KO and yss[i] < 1 -1e-6: 
@@ -140,9 +140,12 @@ class BilevelMethods:
             mys = [0 for i in network.M]
             vss = [2000 if i in [network.biomass,network.chemical] else 0 for i in network.M]
             soltype = 'Infeasible or Unbounded'
-            del_strat = 'all'
+            del_strat = [i for i in network.M]
         rys = self.__ysheuristic(mys)
-        self.r_m = MethodResult(network.Name,del_strat,vss,mys,m_time,soltype,'M')
+        
+        ko_index = [network.Rxn.index(i) for i in del_strat]
+
+        self.r_m = MethodResult(network.Name,del_strat,vss,mys,ko_index,m_time,soltype,'M')
         return self.r_m
 
     def CB_O(self,network:M_Network=None,K:int=None) -> MethodResult:
@@ -276,12 +279,13 @@ class BilevelMethods:
         elif m.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
             yss = [0 for i in network.M]
             vss = [2000 if i in [network.biomass,network.chemical] else 0 for i in network.M]
-            del_strat_cb = ['all']
+            del_strat_cb = [_ for _ in network.M]
             soltype = 'Infeasible'
         
         rys = self.__ysheuristic(yss)
+        ko_index = [network.Rxn.index(i) for i in del_strat_cb]
 
-        self.r_o = MethodResult(network.Name,del_strat_cb,vss,yss,cb_time,soltype,'O')
+        self.r_o = MethodResult(network.Name,del_strat_cb,vss,yss,ko_index,cb_time,soltype,'O')
         return self.r_o
 
     def CB_P(self,network:M_Network=None,K:int=None) -> MethodResult:
@@ -342,7 +346,7 @@ class BilevelMethods:
                             for comb in ki:
                                 model.cbLazy(vi_biom_val <= model._vars[network.biomass] +
                                                     (math.ceil(model._vi[network.biomass]*10)/10) *(sum(model._varsy[f] for f in comb)))
-                    
+                            return
                     if cur_obj - vi_chem_val < 1e-6 and flag:
  
                         model._pbnd = cur_obj
@@ -358,7 +362,7 @@ class BilevelMethods:
                         model.cbSetSolution(model._vars, model._sv)
                         model.cbSetSolution(model._varsy, model._sy)
                         model.cbUseSolution()
-                   
+                        return
 
                     elif model._pbnd > vi_chem_val:
 
@@ -388,7 +392,8 @@ class BilevelMethods:
         
         if network.KO is not None:
             p.addConstr(sum(1-cby[j] for j in network.KO) == K, name='knapsack')
-            p.addConstrs((cby[j] == 1 for j in network.M if j not in network.KO),name='Essen')
+            # p.addConstrs((cby[j] for j in network.M) == len(network.M)-K,name='Essen')
+            p.addConstrs((cby[j]==1 for j in network.M if j not in network.KO),name='Essen')
         elif network.KO is None:
             p.addConstr(sum(1-cby[j] for j in network.M) == K, name='knapsack')
 
@@ -437,11 +442,13 @@ class BilevelMethods:
         elif p.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
             yss = [0 for i in network.M]
             vs = [2000 if i in [network.biomass,network.chemical] else 0 for i in network.M]
-            del_strat_cb = ['all']
+            del_strat_cb = [_ for _ in network.M]
             soltype = 'Infeasible'
 
         rys = self.__ysheuristic(yss)
-        self.r_p = MethodResult(network.Name,del_strat_cb,vss,yss,pcb_time,soltype,'P')
+
+        ko_index = [network.Rxn.index(i) for i in del_strat_cb]
+        self.r_p = MethodResult(network.Name,del_strat_cb,vss,yss,ko_index,pcb_time,soltype,'P')
         return self.r_p
 
     def FBA_check(self,network:M_Network,solution:MethodResult=None,obj_v:str=None,c_params:str=None) -> Check:
