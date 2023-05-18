@@ -27,7 +27,7 @@ def strain_id(name:str=None)->int:
     elif name == 'iJR':
         idstrain = 2000
     elif name == 'iAF':
-        idstrain == 3000
+        idstrain = 3000
     return idstrain
 
 def method_id(method:str=None)->int:
