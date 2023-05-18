@@ -21,6 +21,25 @@ def strainsele(strain:str=None) -> Met_Net:
     return met
 
 
+def strain_id(name:str=None)->int:
+    if name == 'iJO':
+        idstrain = 1000
+    elif name == 'iJR':
+        idstrain = 2000
+    elif name == 'iAF':
+        idstrain == 3000
+    return idstrain
+
+def method_id(method:str=None)->int:
+    if method == 'O':
+        meid = 100
+    elif method == 'P':
+        meid = 200
+    elif method == 'M':
+        meid = 300 
+    return meid
+
+
 if __name__=="__main__":
     metnet = strainsele('iaf')
     print(metnet.Name)
