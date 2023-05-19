@@ -2,27 +2,41 @@ import sys
 import os
 sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'MY_MODULES'))) 
 
+from CB_Sol_P import CB_P
 from Algorithms import BilevelMethods
-
-sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iJO1366')))
-from MN_ijo1366 import MN_ijo1366
+from strainselector import strainsele
 import pandas as pd
+import matplotlib.pyplot as plt
 
-solver = BilevelMethods(log=False)
 
-metnet = MN_ijo1366
+strain = sys.argv[1]
 
-tgt = float(sys.argv[1])
-metnet.target = tgt
-k = int(sys.argv[2])
-print(f"FVA v[b] ={metnet.FVA[metnet.biomass]}")
-print(f"FVA v[c] ={metnet.FVA[metnet.chemical]}")
+metnet = strainsele(strain)
+name = metnet.Name[:3]
 
-o = solver.CB_O(network=metnet,K=k)
+obj = metnet.Rxn[metnet.chemical]
+K = 2
 
-print(len(o.Ys))
-print(f"{o.Vs[metnet.biomass]}-> {o.Vs[metnet.chemical]}")
+tgts = [_ for _ in range(10,100,10)]
+solver= BilevelMethods(log=False)
+chems_solver = []
+chems_function = []
+e_chems = []
+for target in tgts:
+    metnet.target = target/100
+    e_chems.append(metnet.FVA[metnet.chemical])
+    dp = CB_P(network=metnet,k=K,log=False)
+    ap = solver.CB_P(network=metnet,K=K)
+    chems_function.append(dp.Vs[metnet.chemical])
+    chems_solver.append(ap.Vs[metnet.chemical])
 
-ocb = solver.FBA_check(network=metnet,solution=o,obj_v='biomass',c_params='ys')
+fig, ax = plt.subplots()
+plt.plot(tgts,e_chems,linestyle='dotted',c='grey')
+ax.set_title(f"{obj} Production K={K} - {name}")
+plt.xlabel(r""" % Biomass min production $mmol/g(Dw)h$""")
+plt.ylabel(r""" Chemical production $mmol/g(Dw)h$""")
+plt.scatter(tgts,chems_function,marker='x',label="Function",s=65,c='black')
+plt.scatter(tgts,chems_solver,marker='d',label="Algorithms",s=60,c='teal')
+ax.legend()
+plt.show()
 
-print(f"{ocb.Biomass} -> {ocb.Chemical}")
