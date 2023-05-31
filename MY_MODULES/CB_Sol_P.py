@@ -49,7 +49,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         plb[network.biomass] = pminprod
 
         def inner(imodel, yoj:Vector):
-            # global vij
+       
 
             imodel.setAttr('LB',imodel.getVars(),[plb[j]*yoj[j] for j in network.M])
             imodel.setAttr('UB',imodel.getVars(),[pub[j]*yoj[j] for j in network.M])
@@ -68,7 +68,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
         def lazycall(model,where):
             
             if where == GRB.Callback.MIPSOL:
-                # print(f'\nMIPSOL')
+                print(f'\nMIPSOL')
                 model._voj = model.cbGetSolution(model._vars)
                 model._yoj = model.cbGetSolution(model._varsy)
                 knockset =  [i for i,y in enumerate(model._yoj) if model._yoj[i] < 1e-6]
@@ -78,22 +78,26 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     return
                 cur_obj = model.cbGet(GRB.Callback.MIPSOL_OBJBST)
                 cur_bd = model.cbGet(GRB.Callback.MIPSOL_OBJBND)
-                # print(f"KO set: {knockset} -> {[network.Rxn[i] for i in knockset]}")
-                # print(f"Vo[b]: {model._voj[network.biomass]}")
-                # print(f"Vo[c]: {model._voj[network.chemical]}")
+
+                if cur_bd > 100:
+                    cur_bd = 100
+                print(f"KO set: {knockset} -> {[network.Rxn[i] for i in knockset]}")
+                print(f"Vo[b]: {model._voj[network.biomass]}")
+                print(f"Vo[c]: {model._voj[network.chemical]}")
                 model._vi, inner_status = inner(model._inner, model._yoj)
 
     # ============================ Checking Inner Optimality Status ===================================
                 
-                # print(f"MIPSOL Incbnt = {cur_obj}")
-                # print(f"MIPSOL Bound = {cur_bd}")
-                # print(f"Curnt Pbnd = {model._pbnd}")
-                # print(f"Vi[c]: {model._vi[network.chemical]}")
-                # print(f"Vi[b]: {model._vi[network.biomass]}")
-                # print(f">> Algorithm response: \n")
+                print(f"MIPSOL Incbnt = {cur_obj}")
+                print(f"MIPSOL Bound = {cur_bd}")
+                print(f"Curnt Pbnd = {model._pbnd}")
+                print(f"Vi[c]: {model._vi[network.chemical]}")
+                print(f"Vi[b]: {model._vi[network.biomass]}")
+                print(f"Sum: {cur_obj+model._voj[network.chemical]}")
+                print(f">> Algorithm response: \n")
                 if inner_status != GRB.OPTIMAL:
-                    # print(f"{' '*3}feasibility cuts inner not optinal MIPSOL \n")
-                    # print(f"{' '*4} (sum{['y[%d]'%g for g in knockset]}) >= 1")
+                    print(f"{' '*3}feasibility cuts inner not optinal MIPSOL \n")
+                    print(f"{' '*4} (sum{['y[%d]'%g for g in knockset]}) >= 1")
                     model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
                     if lp:
                         ysum = [model._varsy[j] for j in knockset]
@@ -102,52 +106,67 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                         rhs = 1
                         lazycts.append((expr,sense,rhs))
                     return
-
+                # elif cur_obj + model._voj[network.chemical] == 0:
+                #     print(f"{' '*3}Cur Incubent = 0 & Vo = 0")
+                #     print(f"{' '*4} (sum{['y[%d]'%g for g in knockset]}) >= 1")
+                #     model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
+                #     return
                 else:
                     vi_biom_val = model._vi[network.biomass]
                     vi_chem_val = model._vi[network.chemical]
+                    
                     if network.KO is not None:
                         knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.KO)
                     else:
                         knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.M)
+                    
+                    
                     ki = (i for i in combinations(knockset_inner,k))
 
                     # bestknownchem = cur_obj
+                    # if vi_chem_val <= 1e-6:
+                    #     print(f"\n{' '*3}vi_chem <= 1e-6")
+                    #     print(f"{' '*4}(sum{['y[%d]'%g for g in knockset]}) >= 1\n")
+                    #     model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
+
                     flag = True
                     if abs(model._vi[network.biomass] - model._voj[network.biomass]) > 1e-6:
-                            # print(f"{' '*3}|vi[b] - vo[b]| > 1e-6 \n")
+                            print(f"{' '*3}|vi[b] - vo[b]| > 1e-6 \n")
                             flag = False
                             for comb in ki:
                                 model.cbLazy(vi_biom_val <= model._vars[network.biomass] +
                                                     (math.ceil(model._vi[network.biomass]*10)/10) *(sum(model._varsy[f] for f in comb)))
-                                # print(f"{' '*4}{vi_biom_val} <= v[b] +{math.ceil(model._vi[network.biomass]*10)/10} *(sum{['y[%d]'%g for g in comb]})")
+                                print(f"{' '*4}{vi_biom_val} <= v[b] +{math.ceil(model._vi[network.biomass]*10)/10} *(sum{['y[%d]'%g for g in comb]})")
                                 if lp:
                                     sense = '>='
                                     rhs = vi_biom_val
                                     ysum = [model._varsy[j] for j in comb]
                                     expr = model._vars[network.biomass] + (math.ceil(model._vi[network.biomass]*10)/10) *sum(ysum)
                                     lazycts.append((expr,sense,rhs))
-                            return
-                    if cur_obj - vi_chem_val < 1e-6 and flag:
-                        # print(f"{' '*3}curobj - vi[c] < 1e-6 & flag \n")
-                        # print(f"{' '*4}Update: pbdn = {vi_chem_val}")
+                    
+                    print(f"This is a new print")      
+                    if (cur_obj - vi_chem_val < 1e-6) and (flag):
+                        print(f"{' '*3}curobj - vi[c] < 1e-6 & flag \n")
+                        print(f"{' '*4}Update: pbdn = {vi_chem_val}")
                         model._pbnd = cur_obj
                         return
                     
                     elif model._pbnd < vi_chem_val: 
-                        # print(f"\n{' '*3}pbnd < vi[c] \n")
-                        # print(f"{' '*4}{vi_chem_val} >= v[c] - {math.ceil(cur_bd)}*(sum{['y[%d]'%g for g in knockset]})")
+                        print(f"\n{' '*3}pbnd < vi[c] \n")
+                        print(f"{' '*4}{vi_chem_val} >= v[c] - {math.ceil(cur_bd)}*(sum{['y[%d]'%g for g in knockset]})")
                        
-                        # print(f"{' '*4}Set Solution")
+                        
                         model.cbLazy(vi_chem_val >= model._vars[network.chemical] - math.ceil(cur_bd)*(sum(model._varsy[g] for g in knockset)))
-                        # model._pbnd = vi_chem_val
                         # Updating the model variables
-                        model._sv = model._vi
-                        model._sy = model._yoj
-                        # Setting solution
-                        model.cbSetSolution(model._vars, model._sv)
-                        model.cbSetSolution(model._varsy, model._sy)
-                        model.cbUseSolution()
+                        
+                        if vi_chem_val > 1e-3: 
+                            model._sv = model._vi
+                            model._sy = model._yoj
+                            # Setting solution
+                            model.cbSetSolution(model._vars, model._sv)
+                            model.cbSetSolution(model._varsy, model._sy)
+                            model.cbUseSolution()
+                            print(f"{' '*4}Set Solution")
                         if lp:
                             sense = '<='
                             rhs = vi_chem_val
@@ -157,8 +176,8 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                         return
                     
                     elif model._pbnd > vi_chem_val:
-                        # print(f"\n{' '*3}pbnd > vi_chem \n")
-                        # print(f"{' '*4}(sum{['y[%d]'%g for g in knockset]}) >= 1")
+                        print(f"\n{' '*3}pbnd > vi_chem \n")
+                        print(f"{' '*4}(sum{['y[%d]'%g for g in knockset]}) >= 1")
                         model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
                         if lp:
                             sense = '>='
@@ -168,6 +187,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                             lazycts.append((expr,sense,rhs))
                         return
     # =============================================================================================================================                        
+    # ============================================== MIPNODE =====================================       
             # elif where == GRB.Callback.MIP:
             #     # print(f'\nMIP')
             #     mip_objbnd = model.cbGet(GRB.Callback.MIP_OBJBND)
@@ -244,7 +264,8 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                                 model.cbSetSolution(model._vars, model._sv)
                                 model.cbSetSolution(model._varsy, model._sy)
         
-        m = gp.Model()
+       
+        m = gp.Model("Pessimistic")
 
         m.Params.OptimalityTol = network.infeas
         m.Params.IntFeasTol = network.infeas

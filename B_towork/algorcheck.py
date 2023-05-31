@@ -3,40 +3,145 @@ import os
 sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'MY_MODULES'))) 
 
 from CB_Sol_P import CB_P
+from Ob_Met_Net_solmethods import Inner_check_vs_ys_NOP
 from Algorithms import BilevelMethods
-from strainselector import strainsele
+from strainselector import strainsele,strain_id,method_id
 import pandas as pd
 import matplotlib.pyplot as plt
+from itertools import product
+from collections import namedtuple
+import math
 
+
+Result = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
+
+def yvector(strain=None,index=None):
+    yv = [0 if i in index else 1 for i in strain.M]
+    return yv
 
 strain = sys.argv[1]
+
+write = sys.argv[2]
+
+debug = sys.argv[3]
+# index = [int(i) for i in sys.argv[3:]]
 
 metnet = strainsele(strain)
 name = metnet.Name[:3]
 
+v_che = metnet.FBA[metnet.chemical]
+v_bio = metnet.FBA[metnet.biomass]
+
+solver = BilevelMethods(log=False)
+
 obj = metnet.Rxn[metnet.chemical]
-K = 2
 
-tgts = [_ for _ in range(10,100,10)]
-solver= BilevelMethods(log=False)
-chems_solver = []
-chems_function = []
-e_chems = []
-for target in tgts:
-    metnet.target = target/100
-    e_chems.append(metnet.FVA[metnet.chemical])
-    dp = CB_P(network=metnet,k=K,log=False)
-    ap = solver.CB_P(network=metnet,K=K)
-    chems_function.append(dp.Vs[metnet.chemical])
-    chems_solver.append(ap.Vs[metnet.chemical])
+if sys.argv[4] in ['a','all','A','All']:
+    KS = [1,2,3]
+else:
+    KS = [int(sys.argv[4])]
 
-fig, ax = plt.subplots()
-plt.plot(tgts,e_chems,linestyle='dotted',c='grey')
-ax.set_title(f"{obj} Production K={K} - {name}")
-plt.xlabel(r""" % Biomass min production $mmol/g(Dw)h$""")
-plt.ylabel(r""" Chemical production $mmol/g(Dw)h$""")
-plt.scatter(tgts,chems_function,marker='x',label="Function",s=65,c='black')
-plt.scatter(tgts,chems_solver,marker='d',label="Algorithms",s=60,c='teal')
-ax.legend()
-plt.show()
+if sys.argv[5] in ['All','A','a','all']:
+    tgts = [_ for _ in range(10,90,10)]
+elif sys.argv[5] in ['-']:
+    tgts = None
+else:
+    tgts = [int(i) for i in sys.argv[5:]]
+
+
+if debug not in ['D','d']:
+
+    new_r = {'C_Bio':[],
+            'C_Che':[],
+            'Method': [],
+            'Time': [],
+            'Tgt': [],
+            'Strain':[],
+            'K': [],
+            'Strategy':[],
+            'KIndex':[],
+            'E_Bio':[],
+            'E_Che':[],
+            'ICB_Bio':[],
+            'ICB_Che':[],
+            'ICC_Bio':[],
+            'ICC_Che':[],
+            'ID':[],
+            'Pct_Che':[],
+            'Pct_Bio':[]}
+
+
+    for index,pair in enumerate(product(tgts,KS)):
+        target,k = pair
+        metnet.target = target/100
+        print(f"Strain:{metnet.Name[:3]} -> MinProd: {metnet.minprod:.2} -> K: {k} -> {index+1}/{len(list(product(tgts,KS)))}")
+        p = solver.CB_P(network=metnet,K=k)
+
+        icb_p = solver.FBA_check(network=metnet,solution=p,obj_v='biomass',c_params='ys')
+        icc_p = solver.FBA_check(network=metnet,solution=p,obj_v='chemical',c_params='ys')
+
+        bio = metnet.FVA[metnet.biomass]
+        che = metnet.FVA[metnet.chemical]
+
+        p_bio = p.Vs[metnet.biomass]
+        p_che = p.Vs[metnet.chemical]
+        
+        
+        if v_che != 0:
+            pct_che = ((p_che - v_che)/v_che)*100
+        else:
+            pct_che = math.inf
+
+        pct_bio = (p_bio/v_bio)*100
+
+
+        pid = strain_id(metnet.Name[:3]) + method_id(p.Method) + target + k
+        
+        # c - p - m
+        new_r['Tgt'].extend([target])
+        new_r['K'].extend([k])
+        new_r['Strain'].extend([name])
+
+        new_r['C_Bio'].extend([p_bio])
+        new_r['C_Che'].extend([p_che])
+        new_r['Method'].extend([p.Method])
+        new_r['Time'].extend([p.Time])
+        new_r['Strategy'].extend([p.Strategy])
+        new_r['KIndex'].extend([p.KO_index])
+        new_r['ICB_Bio'].extend([icb_p.Biomass])
+        new_r['ICB_Che'].extend([icb_p.Chemical])
+        new_r['ICC_Bio'].extend([icc_p.Biomass])
+        new_r['ICC_Che'].extend([icc_p.Chemical])
+        
+        new_r['E_Bio'].extend([metnet.FVA[metnet.biomass]])
+        new_r['E_Che'].extend([metnet.FVA[metnet.chemical]])
+        new_r['ID'].extend([pid])
+        new_r['Pct_Bio'].extend([pct_bio])
+        new_r['Pct_Che'].extend([pct_che])
+
+    print(f"Chemical: {new_r['C_Che']} -> {new_r['Strategy']}")
+    print(f"ICB_Che: {new_r['ICB_Che']}")
+    
+    
+    if write in ['y',"Y"]:
+        df = pd.DataFrame.from_dict(new_r)
+        df.to_csv(f"../Results/Envelopes/Revised/DR/DEF_3_{name}.csv")
+        sys.exit('File created - Run terminated!')
+    else:
+        sys.exit('Program Terminated - No csv File!')
+
+elif debug in ['D','d']:
+
+    for pair in product(tgts,KS):
+        target,k = pair
+        metnet.target = target/100
+
+        p = CB_P(network=metnet,k=2,log=True)
+        ip = Inner_check_vs_ys_NOP(network=metnet,result_cb=p,criteria='ys',objective='biomass')
+
+        print(f"Chemical: {p.Vs[metnet.chemical]:.2} -> {p.Strategy}")
+        print(f"ICB_Che: {ip.Chemical}")
+
+else:
+    sys.exit()
 

@@ -323,7 +323,9 @@ class BilevelMethods:
                 
                 cur_obj = model.cbGet(GRB.Callback.MIPSOL_OBJBST)
                 cur_bd = model.cbGet(GRB.Callback.MIPSOL_OBJBND)
-
+                if cur_bd > 100:
+                    cur_bd = 100
+                    
                 model._vi, inner_status = inner(model._inner, model._yoj)
 
                 if inner_status != GRB.OPTIMAL:
@@ -338,6 +340,7 @@ class BilevelMethods:
                         knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.KO)
                     else:
                         knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.M)
+                    
                     ki = (i for i in combinations(knockset_inner,K))
 
                     flag = True
@@ -346,8 +349,8 @@ class BilevelMethods:
                             for comb in ki:
                                 model.cbLazy(vi_biom_val <= model._vars[network.biomass] +
                                                     (math.ceil(model._vi[network.biomass]*10)/10) *(sum(model._varsy[f] for f in comb)))
-                            return
-                    if cur_obj - vi_chem_val < 1e-6 and flag:
+    
+                    if (cur_obj - vi_chem_val < 1e-6) and (flag):
  
                         model._pbnd = cur_obj
                         return
@@ -355,13 +358,13 @@ class BilevelMethods:
                     elif model._pbnd < vi_chem_val: 
        
                         model.cbLazy(vi_chem_val >= model._vars[network.chemical] - math.ceil(cur_bd)*(sum(model._varsy[g] for g in knockset)))
-    
-                        model._sv = model._vi
-                        model._sy = model._yoj
+                        if vi_chem_val > 1e-3:
+                            model._sv = model._vi
+                            model._sy = model._yoj
 
-                        model.cbSetSolution(model._vars, model._sv)
-                        model.cbSetSolution(model._varsy, model._sy)
-                        model.cbUseSolution()
+                            model.cbSetSolution(model._vars, model._sv)
+                            model.cbSetSolution(model._varsy, model._sy)
+                            model.cbUseSolution()
                         return
 
                     elif model._pbnd > vi_chem_val:
