@@ -144,8 +144,15 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                                     expr = model._vars[network.biomass] + (math.ceil(model._vi[network.biomass]*10)/10) *sum(ysum)
                                     lazycts.append((expr,sense,rhs))
                     
-                    print(f"This is a new print")      
-                    if (cur_obj - vi_chem_val < 1e-6) and (flag):
+                    print(f"This is a new print")  
+
+
+                    if cur_obj + vi_chem_val + model._voj[network.chemical] == 0:
+                        print(f"{' '*3}Cur Incubent = 0 & Vo = 0")
+                        print(f"{' '*4} (sum{['y[%d]'%g for g in knockset]}) >= 1")
+                        model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
+
+                    elif (cur_obj - vi_chem_val < 1e-6) and (flag):
                         print(f"{' '*3}curobj - vi[c] < 1e-6 & flag \n")
                         print(f"{' '*4}Update: pbdn = {vi_chem_val}")
                         model._pbnd = cur_obj

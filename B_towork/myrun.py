@@ -10,7 +10,7 @@ def main(arg1=None,arg2=None,name:str=None,sleep:int=None,file:str=None):
     
     # os.system(f"python ../A_modules/{sys.argv[1]}.py")
     print(f">> Folder {name}")
-    print(f">> Running -> ../B_{name}/{file}.py")
+    print(f">> Running -> ../B_{name}/{file} {arg1} {arg2}.py")
     if arg2 == None:
         os.system(f"python ../B_{name}/{file}.py {arg1}")
     else:   
@@ -26,11 +26,12 @@ def main(arg1=None,arg2=None,name:str=None,sleep:int=None,file:str=None):
 if __name__ == '__main__':
     strains = ['ijo','ijr','iaf']
     checks = ['A','B','C']
-    sleep = 5
-    file = f"test_k"
+    sleep = 10
+    file = f"algorcheck"
     name = 'towork'
+    arg2 = 'y - all all'
     for strain in strains:
-        main(arg1=strain,name=name,sleep=sleep,file=file)
+        main(arg1=strain,arg2=arg2,name=name,sleep=sleep,file=file)
 
 
 

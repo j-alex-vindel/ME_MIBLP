@@ -15,42 +15,7 @@ import math
 
 Result = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
 
-def yvector(strain=None,index=None):
-    yv = [0 if i in index else 1 for i in strain.M]
-    return yv
-
-strain = sys.argv[1]
-
-write = sys.argv[2]
-
-debug = sys.argv[3]
-# index = [int(i) for i in sys.argv[3:]]
-
-metnet = strainsele(strain)
-name = metnet.Name[:3]
-
-v_che = metnet.FBA[metnet.chemical]
-v_bio = metnet.FBA[metnet.biomass]
-
-solver = BilevelMethods(log=False)
-
-obj = metnet.Rxn[metnet.chemical]
-
-if sys.argv[4] in ['a','all','A','All']:
-    KS = [1,2,3]
-else:
-    KS = [int(sys.argv[4])]
-
-if sys.argv[5] in ['All','A','a','all']:
-    tgts = [_ for _ in range(10,90,10)]
-elif sys.argv[5] in ['-']:
-    tgts = None
-else:
-    tgts = [int(i) for i in sys.argv[5:]]
-
-
-if debug not in ['D','d']:
-
+def Pess_Algo():
     new_r = {'C_Bio':[],
             'C_Che':[],
             'Method': [],
@@ -68,7 +33,8 @@ if debug not in ['D','d']:
             'ICC_Che':[],
             'ID':[],
             'Pct_Che':[],
-            'Pct_Bio':[]}
+            'Pct_Bio':[],
+            'Soltype':[]}
 
 
     for index,pair in enumerate(product(tgts,KS)):
@@ -113,34 +79,85 @@ if debug not in ['D','d']:
         new_r['ICC_Bio'].extend([icc_p.Biomass])
         new_r['ICC_Che'].extend([icc_p.Chemical])
         
-        new_r['E_Bio'].extend([metnet.FVA[metnet.biomass]])
-        new_r['E_Che'].extend([metnet.FVA[metnet.chemical]])
+        new_r['E_Bio'].extend([bio])
+        new_r['E_Che'].extend([che])
         new_r['ID'].extend([pid])
         new_r['Pct_Bio'].extend([pct_bio])
         new_r['Pct_Che'].extend([pct_che])
+        new_r['Soltype'].extend([p.Soltype])
 
-    print(f"Chemical: {new_r['C_Che']} -> {new_r['Strategy']}")
-    print(f"ICB_Che: {new_r['ICB_Che']}")
+    for i,v in enumerate(new_r['C_Che']):
+        print(f"tgt {tgts[i]} -> {new_r['C_Che'][i]:.3} -> {new_r['ICB_Che'][i]:.3} -> {new_r['Strategy'][i]} -> {new_r['Soltype'][i]}")
     
     
     if write in ['y',"Y"]:
         df = pd.DataFrame.from_dict(new_r)
-        df.to_csv(f"../Results/Envelopes/Revised/DR/DEF_3_{name}.csv")
+        df.to_csv(f"../Results/Envelopes/Revised/DR/DEF_P_{name}.csv")
         sys.exit('File created - Run terminated!')
     else:
         sys.exit('Program Terminated - No csv File!')
 
-elif debug in ['D','d']:
-
+def Pess_D():
+    ches = []
+    iches = []
+    strats = []
+    soltype = []
+    
     for pair in product(tgts,KS):
         target,k = pair
         metnet.target = target/100
 
         p = CB_P(network=metnet,k=2,log=True)
         ip = Inner_check_vs_ys_NOP(network=metnet,result_cb=p,criteria='ys',objective='biomass')
+        ches.append(p.Vs[metnet.chemical])
+        iches.append(ip.Chemical)
+        strats.append(p.Strategy)
+        soltype.append(p.Soltype)
+    
+    
+    for i,v in enumerate(ches):
+        print(f"tgt {tgts[i]} -> {ches[i]:.3} -> {iches[i]:.3} -> {strats[i]} -> {soltype[i]}")
 
-        print(f"Chemical: {p.Vs[metnet.chemical]:.2} -> {p.Strategy}")
-        print(f"ICB_Che: {ip.Chemical}")
+def yvector(strain=None,index=None):
+    yv = [0 if i in index else 1 for i in strain.M]
+    return yv
+
+strain = sys.argv[1]
+
+write = sys.argv[2]
+
+debug = sys.argv[3]
+# index = [int(i) for i in sys.argv[3:]]
+
+metnet = strainsele(strain)
+name = metnet.Name[:3]
+
+v_che = metnet.FBA[metnet.chemical]
+v_bio = metnet.FBA[metnet.biomass]
+
+solver = BilevelMethods(log=False)
+
+obj = metnet.Rxn[metnet.chemical]
+
+if sys.argv[4] in ['a','all','A','All']:
+    KS = [1,2,3]
+else:
+    KS = [int(sys.argv[4])]
+
+if sys.argv[5] in ['All','A','a','all']:
+    tgts = [_ for _ in range(10,100,10)]
+elif sys.argv[5] in ['-']:
+    tgts = None
+else:
+    tgts = [int(i) for i in sys.argv[5:]]
+
+
+if debug not in ['D','d']:
+    Pess_Algo()
+
+elif debug in ['D','d']:
+    Pess_D()
+
 
 else:
     sys.exit()

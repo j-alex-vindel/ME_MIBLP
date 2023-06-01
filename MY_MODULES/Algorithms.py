@@ -349,8 +349,11 @@ class BilevelMethods:
                             for comb in ki:
                                 model.cbLazy(vi_biom_val <= model._vars[network.biomass] +
                                                     (math.ceil(model._vi[network.biomass]*10)/10) *(sum(model._varsy[f] for f in comb)))
-    
-                    if (cur_obj - vi_chem_val < 1e-6) and (flag):
+                    
+                    if cur_bd + vi_chem_val + model._voj[network.chemical] == 0:
+                        model.cbLazy(sum(model._varsy[j] for j in knockset)>=1)
+                    
+                    elif (cur_obj - vi_chem_val < 1e-6) and (flag):
  
                         model._pbnd = cur_obj
                         return
@@ -438,13 +441,13 @@ class BilevelMethods:
             soltype = 'Optimal'
         elif p.status == GRB.TIME_LIMIT:
             yss = [p.getVarByName('cby[%d]'%j).x for j in network.M]
-            vs = [p.getVarByName('cbv[%d]'%j).x for j in network.M]
+            vss = [p.getVarByName('cbv[%d]'%j).x for j in network.M]
             del_strat_cb = [network.Rxn[i] for i in network.M if yss[i] < .5]
             soltype = 'Time_Limit'
 
         elif p.status in (GRB.INFEASIBLE,GRB.UNBOUNDED, GRB.INF_OR_UNBD):
             yss = [0 for i in network.M]
-            vs = [2000 if i in [network.biomass,network.chemical] else 0 for i in network.M]
+            vss = [2000 if i in [network.biomass,network.chemical] else 0 for i in network.M]
             del_strat_cb = [_ for _ in network.M]
             soltype = 'Infeasible'
 
@@ -475,14 +478,15 @@ class BilevelMethods:
         v = m.addVars(network.M,lb=-GRB.INFINITY,ub=GRB.INFINITY,vtype=GRB.CONTINUOUS,name='v')
         v_s = [v[i] for i in network.M]
         m.setObjective((1*v[f_objective]),GRB.MAXIMIZE)
-        m.update()
+       
         # print(len(m.getVars()))
         # print(len([clb[j] * cys[j] for j in network.M]))    
         # out_s = [0 if abs(i)<1e-6 else (i,j) for i,j in enumerate([network.S.dot(vs) - network.b])]
         # print(network.S.dot(vs) - network.b)
         # print(out_s)
         m.addMConstr(network.S,v_s,'=',network.b,name='Stoi')
-        m.addConstr(v[network.biomass] >= network.minprod,name='minprod')
+        # m.addConstr(v[network.biomass] >= network.minprod,name='minprod')
+        m.update()
         if c_params == 'both':
             m.setAttr('LB',m.getVars(),[clb[j]*cys[j] for j in network.M])
             m.setAttr('UB',m.getVars(),[cub[j]*cys[j] for j in network.M])
