@@ -11,7 +11,7 @@ M_Network = Type[Metabolic_Network]
 Ks = NewType('K Strategies',int)
 Vector = List[int]
 Inner_obj = NewType('Inner Objective',str)
-Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
+Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','KO_index','Time','Soltype','Method'])
 
 
 def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,threads:bool=False,lp:bool=False) -> Result_cb:
@@ -95,6 +95,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                 print(f"Vi[b]: {model._vi[network.biomass]}")
                 print(f"Sum: {cur_obj+model._voj[network.chemical]}")
                 print(f">> Algorithm response: \n")
+
                 if inner_status != GRB.OPTIMAL:
                     print(f"{' '*3}feasibility cuts inner not optinal MIPSOL \n")
                     print(f"{' '*4} (sum{['y[%d]'%g for g in knockset]}) >= 1")
@@ -106,11 +107,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                         rhs = 1
                         lazycts.append((expr,sense,rhs))
                     return
-                # elif cur_obj + model._voj[network.chemical] == 0:
-                #     print(f"{' '*3}Cur Incubent = 0 & Vo = 0")
-                #     print(f"{' '*4} (sum{['y[%d]'%g for g in knockset]}) >= 1")
-                #     model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
-                #     return
+         
                 else:
                     vi_biom_val = model._vi[network.biomass]
                     vi_chem_val = model._vi[network.chemical]
@@ -123,12 +120,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     
                     ki = (i for i in combinations(knockset_inner,k))
 
-                    # bestknownchem = cur_obj
-                    # if vi_chem_val <= 1e-6:
-                    #     print(f"\n{' '*3}vi_chem <= 1e-6")
-                    #     print(f"{' '*4}(sum{['y[%d]'%g for g in knockset]}) >= 1\n")
-                    #     model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
-
+                 
                     flag = True
                     if abs(model._vi[network.biomass] - model._voj[network.biomass]) > 1e-6:
                             print(f"{' '*3}|vi[b] - vo[b]| > 1e-6 \n")
@@ -355,7 +347,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
             vs = [2000 for i in network.M]
             del_strat_cb = ['all']
             soltype = 'Infeasible'
-
+        ko_index = [network.Rxn.index(i) for i in del_strat_cb]
         if lp:
             for l in range(len(lazycts)):
                 if lazycts[l][1] == '=':
@@ -371,7 +363,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
             filename = f"pess_log_k{k}_{network.Name}.lp"
             m.write(filename)
 
-        return Result_cb(network.Name,del_strat_cb,ys,vs,vij,cb_time,soltype,'CBP')
+        return Result_cb(network.Name,del_strat_cb,ys,vs,vij,ko_index,cb_time,soltype,'P')
 
 
 ##### Pessimistic Callback Function with changes from Monday's meeting no flag added ####

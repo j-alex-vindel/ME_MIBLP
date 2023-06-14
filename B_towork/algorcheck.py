@@ -98,25 +98,84 @@ def Pess_Algo():
         sys.exit('Program Terminated - No csv File!')
 
 def Pess_D():
-    ches = []
-    iches = []
-    strats = []
-    soltype = []
-    
+   
+    new_r = {'C_Bio':[],
+            'C_Che':[],
+            'Method': [],
+            'Time': [],
+            'Tgt': [],
+            'Strain':[],
+            'K': [],
+            'Strategy':[],
+            'KIndex':[],
+            'E_Bio':[],
+            'E_Che':[],
+            'ICB_Bio':[],
+            'ICB_Che':[],
+            'ICC_Bio':[],
+            'ICC_Che':[],
+            'ID':[],
+            'Pct_Che':[],
+            'Pct_Bio':[],
+            'Soltype':[]}
     for pair in product(tgts,KS):
         target,k = pair
         metnet.target = target/100
 
         p = CB_P(network=metnet,k=2,log=True)
-        ip = Inner_check_vs_ys_NOP(network=metnet,result_cb=p,criteria='ys',objective='biomass')
-        ches.append(p.Vs[metnet.chemical])
-        iches.append(ip.Chemical)
-        strats.append(p.Strategy)
-        soltype.append(p.Soltype)
+        ibp = Inner_check_vs_ys_NOP(network=metnet,result_cb=p,criteria='ys',objective='biomass')
+        icp = Inner_check_vs_ys_NOP(network=metnet,result_cb=p,criteria='ys',objective='chemical')
+        
+        bio = metnet.FVA[metnet.biomass]
+        che = metnet.FVA[metnet.chemical]
+
+        p_bio = p.Vs[metnet.biomass]
+        p_che = p.Vs[metnet.chemical]
+        
+        
+        if v_che != 0:
+            pct_che = ((p_che - v_che)/v_che)*100
+        else:
+            pct_che = math.inf
+
+        pct_bio = (p_bio/v_bio)*100
+
+
+        pid = strain_id(metnet.Name[:3]) + method_id(p.Method) + target + k
+        
+        # c - p - m
+        new_r['Tgt'].extend([target])
+        new_r['K'].extend([k])
+        new_r['Strain'].extend([name])
+
+        new_r['C_Bio'].extend([p_bio])
+        new_r['C_Che'].extend([p_che])
+        new_r['Method'].extend([p.Method])
+        new_r['Time'].extend([p.Time])
+        new_r['Strategy'].extend([p.Strategy])
+        new_r['KIndex'].extend([p.KO_index])
+        new_r['ICB_Bio'].extend([ibp.Biomass])
+        new_r['ICB_Che'].extend([ibp.Chemical])
+        new_r['ICC_Bio'].extend([icp.Biomass])
+        new_r['ICC_Che'].extend([icp.Chemical])
+        
+        new_r['E_Bio'].extend([bio])
+        new_r['E_Che'].extend([che])
+        new_r['ID'].extend([pid])
+        new_r['Pct_Bio'].extend([pct_bio])
+        new_r['Pct_Che'].extend([pct_che])
+        new_r['Soltype'].extend([p.Soltype])
     
+    if write in ['y',"Y"]:
+        df = pd.DataFrame.from_dict(new_r)
+        df.to_csv(f"../Results/Envelopes/Revised/DR/DEF_P1_{name}.csv")
+        sys.exit('File created - Run terminated!')
+    elif write in ['e','E']:
+            sys.exit('Program Terminated - No csv File!')
+    else:
+        for i,v in enumerate(new_r['C_Che']):
+            print(f"tgt {tgts[i]} -> {new_r['C_Che'][i]:.3} -> {new_r['ICB_Che'][i]:.3} -> {new_r['Strategy'][i]} -> {new_r['Soltype'][i]}")
     
-    for i,v in enumerate(ches):
-        print(f"tgt {tgts[i]} -> {ches[i]:.3} -> {iches[i]:.3} -> {strats[i]} -> {soltype[i]}")
 
 def yvector(strain=None,index=None):
     yv = [0 if i in index else 1 for i in strain.M]
@@ -134,6 +193,14 @@ name = metnet.Name[:3]
 
 v_che = metnet.FBA[metnet.chemical]
 v_bio = metnet.FBA[metnet.biomass]
+
+print(name)
+print(v_che)
+print(v_bio)
+print(metnet.Rxn[metnet.chemical])
+sys.exit()
+
+
 
 solver = BilevelMethods(log=False)
 

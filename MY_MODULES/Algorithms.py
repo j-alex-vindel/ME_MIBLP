@@ -329,13 +329,13 @@ class BilevelMethods:
                 model._vi, inner_status = inner(model._inner, model._yoj)
 
                 if inner_status != GRB.OPTIMAL:
-
                     model.cbLazy(sum(model._varsy[j] for j in knockset) >=1)
                     return
 
                 else:
                     vi_biom_val = model._vi[network.biomass]
                     vi_chem_val = model._vi[network.chemical]
+                    
                     if network.KO is not None:
                         knockset_inner = (i for i,y in enumerate(model._vi) if abs(model._vi[i]) < 1e-6 and i in network.KO)
                     else:
