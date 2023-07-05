@@ -73,9 +73,9 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                 model._yoj = model.cbGetSolution(model._varsy)
                 knockset =  [i for i,y in enumerate(model._yoj) if model._yoj[i] < 1e-6]
                 
-
                 if len(knockset) != k:
                     return
+                
                 cur_obj = model.cbGet(GRB.Callback.MIPSOL_OBJBST)
                 cur_bd = model.cbGet(GRB.Callback.MIPSOL_OBJBND)
 
