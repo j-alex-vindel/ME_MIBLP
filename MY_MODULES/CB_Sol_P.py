@@ -138,7 +138,7 @@ def CB_P(network:M_Network=None, k:Ks=None,log:bool=None,speed:bool=False,thread
                     
                     print(f"This is a new print")  
 
-
+# New Lines to avoid zeroes
                     if cur_obj + vi_chem_val + model._voj[network.chemical] == 0:
                         print(f"{' '*3}Cur Incubent = 0 & Vo = 0")
                         print(f"{' '*4} (sum{['y[%d]'%g for g in knockset]}) >= 1")

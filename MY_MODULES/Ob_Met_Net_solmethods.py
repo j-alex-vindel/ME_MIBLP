@@ -356,12 +356,12 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,ys=None,log:bool=True,speed:boo
     print(f"Chemical: {network.Rxn[network.chemical]} -> {network.chemical}")
     print(f"Growth: {network.Rxn[network.biomass]} -> {network.biomass}")
     print(f"Target: {network.target}")
-    print(f"Minprod: {network.FVA[network.biomass]}")
+    print(f"Minprod: {network.minprod}")
     print(f"FBA [b]: {network.FBA[network.biomass]}")
-
+    print(f"LB Before: {network.LB[network.biomass]}")
     lb = copy.deepcopy(network.LB)
     lb[network.biomass] = network.minprod
-
+    print(f"LB After: {lb[network.biomass]}")
     m = gp.Model()
 
     # Variables
@@ -388,20 +388,20 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,ys=None,log:bool=True,speed:boo
 # ============================= Commented Section ===================
     if network.KO is not None:
     # Knapsack Constrs
-        #m.addConstr((sum(y[j] for j in network.M) == len(network.M)-k), name='y_essentials') 
-        #m.addConstrs(y[j] == 1 for j in network.M if j not in network.KO)
-        KOSum = 0
-        for i in network.M:
-            if i not in network.KO and ys[i] < 1 -1e-6: 
-                print("notko", i)
-            if i not in network.KO:
-                m.addConstr(y[i] >= 1)
-            if  i in network.KO: 
-                KOSum += ys[i]
-        print ("KOsum", KOSum)
-        alpha = 1-1e-6
-        m.addConstr(sum(y[j] for j in network.M if j in network.KO) >= len(network.KO)-k - alpha, name='knapsack1')
-        m.addConstr(sum(y[j] for j in network.M if j in network.KO) <= len(network.KO)-k + alpha, name='knapsack2')
+        m.addConstr((sum(y[j] for j in network.M) == len(network.M)-k), name='y_essentials') 
+        m.addConstrs(y[j] == 1 for j in network.M if j not in network.KO)
+        # KOSum = 0
+        # for i in network.M:
+        #     if i not in network.KO and ys[i] < 1 -1e-6: 
+        #         print("notko", i)
+        #     if i not in network.KO:
+        #         m.addConstr(y[i] >= 1)
+        #     if  i in network.KO: 
+        #         KOSum += ys[i]
+        # print ("KOsum", KOSum)
+        # alpha = 1-1e-6
+        # m.addConstr(sum(y[j] for j in network.M if j in network.KO) >= len(network.KO)-k - alpha, name='knapsack1')
+        # m.addConstr(sum(y[j] for j in network.M if j in network.KO) <= len(network.KO)-k + alpha, name='knapsack2')
     #elif network.KO is None:
     #    print(f"NO ko sEt")
     #    m.addConstr(sum(1-y[j] for j in network.M)  == k, name='knapsack')
@@ -466,13 +466,13 @@ def MILP_sol_OP(network:M_Network=None,k:Ks=None,ys=None,log:bool=True,speed:boo
     m_time = m.Runtime
     if m.status == GRB.OPTIMAL:
         chem = m.getObjective().getValue()
-        # ys = [m.getVarByName('y[%d]'%j).x for j in network.M]
+        ys = [m.getVarByName('y[%d]'%j).x for j in network.M]
         vss = [m.getVarByName('v[%d]'%j).x for j in network.M]
         soltype = 'Optimal'
         del_strat = [network.Rxn[i] for i in network.M if ys[i] <.5]
 
     elif m.status == GRB.TIME_LIMIT:
-        # ys = [m.getVarByName('my[%d]'%j).x for j in network.M]
+        ys = [m.getVarByName('my[%d]'%j).x for j in network.M]
         vss = [m.getVarByName('mv[%d]'%j).x for j in network.M]
         del_strat = [network.Rxn[i] for i in network.M if ys[i] <.5]
         soltype = 'Time_limit'

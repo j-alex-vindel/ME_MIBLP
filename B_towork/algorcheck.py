@@ -10,10 +10,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from itertools import product
 from collections import namedtuple
+from typing import List,Type
 import math
 
 
 Result = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','Soltype','Method'])
+Tgt = List[float]
+Knock = List[int]
+MN = Type[object]
 
 def Pess_Algo():
     new_r = {'C_Bio':[],
@@ -97,7 +101,7 @@ def Pess_Algo():
     else:
         sys.exit('Program Terminated - No csv File!')
 
-def Pess_D():
+def Pess_D(write:str=None,tgts:Tgt=None,KS:Knock=None,mn:MN=None):
    
     new_r = {'C_Bio':[],
             'C_Che':[],
@@ -116,21 +120,20 @@ def Pess_D():
             'ICC_Che':[],
             'ID':[],
             'Pct_Che':[],
-            'Pct_Bio':[],
-            'Soltype':[]}
+            'Pct_Bio':[]}
     for pair in product(tgts,KS):
         target,k = pair
-        metnet.target = target/100
+        mn.target = target/100
 
-        p = CB_P(network=metnet,k=2,log=True)
-        ibp = Inner_check_vs_ys_NOP(network=metnet,result_cb=p,criteria='ys',objective='biomass')
-        icp = Inner_check_vs_ys_NOP(network=metnet,result_cb=p,criteria='ys',objective='chemical')
+        p = CB_P(network=mn,k=k,log=True)
+        ibp = Inner_check_vs_ys_NOP(network=mn,result_cb=p,criteria='ys',objective='biomass')
+        icp = Inner_check_vs_ys_NOP(network=mn,result_cb=p,criteria='ys',objective='chemical')
         
-        bio = metnet.FVA[metnet.biomass]
-        che = metnet.FVA[metnet.chemical]
+        bio = mn.FVA[mn.biomass]
+        che = mn.FVA[mn.chemical]
 
-        p_bio = p.Vs[metnet.biomass]
-        p_che = p.Vs[metnet.chemical]
+        p_bio = p.Vs[mn.biomass]
+        p_che = p.Vs[mn.chemical]
         
         
         if v_che != 0:
@@ -141,7 +144,7 @@ def Pess_D():
         pct_bio = (p_bio/v_bio)*100
 
 
-        pid = strain_id(metnet.Name[:3]) + method_id(p.Method) + target + k
+        pid = strain_id(mn.Name[:3]) + method_id(p.Method) + target + k
         
         # c - p - m
         new_r['Tgt'].extend([target])
@@ -164,11 +167,11 @@ def Pess_D():
         new_r['ID'].extend([pid])
         new_r['Pct_Bio'].extend([pct_bio])
         new_r['Pct_Che'].extend([pct_che])
-        new_r['Soltype'].extend([p.Soltype])
+        # new_r['Soltype'].extend([p.Soltype])
     
     if write in ['y',"Y"]:
         df = pd.DataFrame.from_dict(new_r)
-        df.to_csv(f"../Results/Envelopes/Revised/DR/DEF_P1_{name}.csv")
+        df.to_csv(f"../Results/Envelopes/Revised/DR/DEF_P3_{name}.csv")
         sys.exit('File created - Run terminated!')
     elif write in ['e','E']:
             sys.exit('Program Terminated - No csv File!')
@@ -198,7 +201,6 @@ print(name)
 print(v_che)
 print(v_bio)
 print(metnet.Rxn[metnet.chemical])
-sys.exit()
 
 
 
@@ -223,7 +225,7 @@ if debug not in ['D','d']:
     Pess_Algo()
 
 elif debug in ['D','d']:
-    Pess_D()
+    Pess_D(write=write,tgts=tgts,KS=KS,mn=metnet)
 
 
 else:

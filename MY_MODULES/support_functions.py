@@ -17,6 +17,7 @@ Result_cb = namedtuple('Result_cb',['MetNet','Strategy','Ys','Vs','Vij','Time','
 R_xml = namedtuple('Result_xml',['MetNet','Strategy','Ys','Vs','Time','Method','K'])
 RM = Type[Result]
 RC = Type[Result_cb]
+Yvector = List[int]
 
 
 def result_parser(file):
@@ -81,6 +82,45 @@ def wildtype_FBA(obj, wildtype:bool=True,mutant:bool=False)->FBA:
         wt_vs = [-200 for _ in obj.M]
 
     return wt_vs
+
+def Wildtpe_Check(obj, wildtype:bool=True,mutant:bool=False,Ys:Yvector=None)->FBA:
+    LB_wt = copy.deepcopy(obj.LB)
+    UB_wt = copy.deepcopy(obj.UB)
+
+    if wildtype and not mutant:
+        objective = obj.biomass
+        FVA = False
+    elif mutant and not wildtype:
+        objective = obj.chemical
+        FVA = True
+    else:
+        raise Exception("Both values of wildtype and mutant can't be both True or False at the same Time, pick one or the other")
+        
+
+    wt = gp.Model()
+    v_wt = wt.addVars(obj.M, lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name='v_wt')
+    v_vs = [v_wt[i] for i in obj.M]
+    wt.setObjective(1*v_wt[objective],GRB.MAXIMIZE)
+    wt.addMConstr(obj.S,v_vs,'=',obj.b,name='Stoi')
+    wt.addConstrs((LB_wt[j]*Ys[j] <= v_wt[j] for j in obj.M), name='LBwt')
+    wt.addConstrs((UB_wt[j]*Ys[j] >= v_wt[j] for j in obj.M), name='UBwt')
+    if FVA:
+        wt.addConstr((v_wt[obj.biomass] >= obj.minprod), name='minprod')
+
+    wt.Params.OptimalityTol = obj.infeas
+    wt.Params.IntFeasTol = obj.infeas
+    wt.Params.FeasibilityTol = obj.infeas
+    wt.Params.OutputFlag = 0
+    wt.Params.LogToConsole = 0
+    wt.optimize()
+    if wt.status == GRB.OPTIMAL:
+        wt_vs =  [wt.getVarByName('v_wt[%s]'%a).x for a in obj.M] 
+    else:
+        wt_vs = [-200 for _ in obj.M]
+
+    return wt_vs
+
+
 
 def maketables(name:str=None):
     if name is None:

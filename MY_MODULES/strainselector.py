@@ -18,6 +18,10 @@ def strainsele(strain:str=None) -> Met_Net:
         sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iAF1260'))) 
         from MN_iaf1260 import MN_iaf1260
         met = MN_iaf1260
+    elif strain == 'momo':
+        sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iJR904'))) 
+        from MN_MOMO import MN_MOMO_ijr
+        met = MN_MOMO_ijr
     return met
 
 
