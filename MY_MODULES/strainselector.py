@@ -22,6 +22,10 @@ def strainsele(strain:str=None) -> Met_Net:
         sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iJR904'))) 
         from MN_MOMO import MN_MOMO_ijr
         met = MN_MOMO_ijr
+    elif strain == 'momod':
+        sys.path.append(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'B_iJR904'))) 
+        from MN_MOMOD import MN_MOMO_D
+        met = MN_MOMO_D
     return met
 
 

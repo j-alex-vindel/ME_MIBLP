@@ -9,10 +9,14 @@ from strainselector import strainsele
 
 import pandas as pd
 
-metnet = strainsele('momo')
-metnet.target = .10
+metnet = strainsele('momod')
+
 print(f"Biomass: {metnet.FBA[metnet.biomass]}")
 print(f"Minprod {metnet.minprod}")
+
+
+print(metnet.Name)
+
 
 K = 2
 
@@ -25,8 +29,10 @@ print(m2.Strategy)
 print(m2.Vs[metnet.biomass],"->",metnet.Rxn[metnet.biomass])
 print(m2.Vs[metnet.chemical],"->",metnet.Rxn[metnet.chemical])
 
+
 c2 = CB_sol_OP(network=metnet,k=K,log=False)
 
+print("CB")
 print(c2.Strategy)
 print(c2.Vs[metnet.biomass],"->",metnet.Rxn[metnet.biomass])
 print(c2.Vs[metnet.chemical],"->",metnet.Rxn[metnet.chemical])
