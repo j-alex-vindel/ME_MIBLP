@@ -11,13 +11,13 @@ import pandas as pd
 
 metnet = strainsele('momod')
 
-print(f"Biomass: {metnet.FBA[metnet.biomass]}")
-print(f"Minprod {metnet.minprod}")
+
 
 
 print(metnet.Name)
-
-
+metnet.target = .3
+print(f"Biomass: {metnet.FBA[metnet.biomass]}")
+print(f"Minprod {metnet.minprod}")
 K = 2
 
 # YS = [0 if i in [2,6] else 1 for i in metnet.M]

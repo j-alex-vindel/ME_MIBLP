@@ -1,0 +1,12 @@
+>> Table Solution iJR904 <<
+\begin{tabular}{lrlrrrl}
+ & Unnamed: 0 & Approach & Biomass & Chemical & Time & Strategy \\
+0 & 0 & O & 0.092030 & 10.285714 & 0.558691 & ['RPI'] \\
+1 & 1 & P & 0.092030 & 10.285714 & 0.250338 & ['GND'] \\
+2 & 2 & O & 0.092030 & 10.285714 & 0.662172 & ['ICDHyr', 'MDH2'] \\
+3 & 3 & P & 0.845843 & 0.886786 & 7.770113 & ['FUM', 'MDH2'] \\
+4 & 4 & O & 0.092030 & 10.285714 & 0.725887 & ['MDH2', 'PFL', 'RPI'] \\
+5 & 5 & P & 0.771797 & 1.589977 & 73.915192 & ['FUM', 'GND', 'PTAr'] \\
+\end{tabular}
+
+

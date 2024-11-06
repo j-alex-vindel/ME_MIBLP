@@ -1,0 +1,12 @@
+>> Table Solution iAF1260 <<
+\begin{tabular}{lrlrrrl}
+ & Unnamed: 0 & Approach & Biomass & Chemical & Time & Strategy \\
+0 & 0 & O & 0.094073 & 9.408977 & 0.634657 & ['CS'] \\
+1 & 1 & P & 0.094073 & 9.408977 & 0.638927 & ['CS'] \\
+2 & 2 & O & 0.094073 & 9.408977 & 0.717024 & ['ALCD2x', 'CS'] \\
+3 & 3 & P & 0.094073 & 9.408977 & 0.748468 & ['ALCD2x', 'CS'] \\
+4 & 4 & O & 0.094073 & 9.408977 & 0.781509 & ['AKGDH', 'CS', 'MDH3'] \\
+5 & 5 & P & 0.094073 & 9.408977 & 0.800531 & ['AKGDH', 'CS', 'MDH3'] \\
+\end{tabular}
+
+

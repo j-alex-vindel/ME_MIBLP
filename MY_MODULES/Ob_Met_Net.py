@@ -142,9 +142,18 @@ class Met_Net:
     def target(self,value:Target=.5):
         self._minprod = None
         self._FBA = None
-        self._FVA = None
+        # self._FVA = None
         self._target = value
     
+    @property
+    def chemical(self):
+        return self._chemical
+
+    @chemical.setter
+    def chemical(self,value:Index):
+        self._FVA = None
+        self._chemical = value
+
     @property
     def minprod(self):
         if self._minprod is None:

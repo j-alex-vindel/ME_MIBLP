@@ -1,0 +1,24 @@
+>> Table Solution iAF1260 <<
+\begin{tabular}{lrlrrrl}
+ & Unnamed: 0 & Approach & Biomass & Chemical & Time & Strategy \\
+0 & 0 & O & 0.094073 & 9.408977 & 0.698393 & ['CS'] \\
+1 & 1 & P & 0.094073 & 9.408977 & 0.652096 & ['CS'] \\
+2 & 2 & O & 0.094073 & 9.408977 & 0.690243 & ['ALCD2x', 'CS'] \\
+3 & 3 & P & 0.097315 & 9.207449 & 8.055862 & ['ALCD2x', 'LDH_D'] \\
+4 & 4 & O & 0.094073 & 9.408977 & 0.830053 & ['AKGDH', 'CS', 'MDH3'] \\
+5 & 5 & P & 0.097315 & 9.207449 & 53.604496 & ['ALCD2x', 'LDH_D', 'PYK'] \\
+\end{tabular}
+
+
+>> Table Solution iAF1260 <<
+\begin{tabular}{lrlrrrl}
+ & Unnamed: 0 & Approach & Biomass & Chemical & Time & Strategy \\
+0 & 0 & O & 0.094073 & 9.408977 & 0.658493 & ['CS'] \\
+1 & 1 & P & 0.094073 & 9.408977 & 0.580690 & ['CS'] \\
+2 & 2 & O & 0.094073 & 9.408977 & 0.895735 & ['ALCD2x', 'CS'] \\
+3 & 3 & P & 0.097315 & 9.207449 & 7.614441 & ['ALCD2x', 'LDH_D'] \\
+4 & 4 & O & 0.094073 & 9.408977 & 0.871119 & ['AKGDH', 'CS', 'MDH3'] \\
+5 & 5 & P & 0.097315 & 9.207449 & 67.381769 & ['ALCD2x', 'LDH_D', 'PYK'] \\
+\end{tabular}
+
+

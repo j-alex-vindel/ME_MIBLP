@@ -1,0 +1,271 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-03-02
+Set parameter IntFeasTol to value 1e-06
+Set parameter IntFeasTol to value 1e-06
+FVA v[b] =0.35422849103149184
+FVA v[c] =10.363115957472473
+
+**** Solving Callbacks k=1 ****
+# Variables (reactions in the network): 2382
+Current Infeasibility: -> 1e-06
+KO set:  37  reactions
+MN: iAF1260
+Chemical: EX_succ_e -> 932
+Growth: BIOMASS_Ec_iAF1260_core_59p81M -> 925
+Target: 0.4
+Minprod: 0.35422849103149184
+FBA [b]: 0.8855712275787295
+-- Pessimistic Approach -- 
+
+Set parameter LazyConstraints to value 1
+Set parameter IntFeasTol to value 1e-06
+Set parameter Presolve to value 0
+Set parameter TimeLimit to value 1000
+Gurobi Optimizer version 10.0.0 build v10.0.0rc2 (win64)
+
+CPU model: Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz, instruction set [SSE2|AVX|AVX2|AVX512]
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+
+Optimize a model with 8779 rows, 4764 columns and 19333 nonzeros
+Model fingerprint: 0xfdacd15d
+Variable types: 2382 continuous, 2382 integer (2382 binary)
+Coefficient statistics:
+  Matrix range     [6e-05, 1e+06]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [4e-01, 4e+01]
+Variable types: 2277 continuous, 2487 integer (2382 binary)
+
+MIP
+MIP_objbnd -> 1e+100
+MIP_objbst -> -1e+100
+
+MIPSOL
+KO set: [1614] -> ['MDH2']
+Vo[b]: 0.3542284908471629
+Vo[c]: 10.36317192367278
+MIPSOL Incbnt = 10.36317192367278
+MIPSOL Bound = 1e+100
+Curnt Pbnd = -1000
+Vi[c]: 0.0
+Vi[b]: 0.8855712275519723
+>> Algorithm response: 
+
+   |vi[b] - vo[b]| > 1e-6 
+
+    0.8855712275519723 <= v[b] +0.9 *(sum['y[109]'])
+    0.8855712275519723 <= v[b] +0.9 *(sum['y[239]'])
+    0.8855712275519723 <= v[b] +0.9 *(sum['y[1163]'])
+    0.8855712275519723 <= v[b] +0.9 *(sum['y[1347]'])
+    0.8855712275519723 <= v[b] +0.9 *(sum['y[1466]'])
+    0.8855712275519723 <= v[b] +0.9 *(sum['y[1614]'])
+    0.8855712275519723 <= v[b] +0.9 *(sum['y[1615]'])
+    0.8855712275519723 <= v[b] +0.9 *(sum['y[1886]'])
+
+   pbnd < vi[c] 
+
+    0.0 >= v[c] - 10.36317192367278*(sum['y[1614]'])
+    Set Solution
+
+MIPSOL
+KO set: [89] -> ['ACKr']
+Vo[b]: 0.3542284908471629
+Vo[c]: 10.36316841207358
+MIPSOL Incbnt = 10.36316841207358
+MIPSOL Bound = 1e+100
+Curnt Pbnd = -1000
+Vi[c]: 0.0
+Vi[b]: 0.8773772754949931
+>> Algorithm response: 
+
+   |vi[b] - vo[b]| > 1e-6 
+
+    0.8773772754949931 <= v[b] +0.9 *(sum['y[89]'])
+    0.8773772754949931 <= v[b] +0.9 *(sum['y[1163]'])
+    0.8773772754949931 <= v[b] +0.9 *(sum['y[1347]'])
+    0.8773772754949931 <= v[b] +0.9 *(sum['y[1466]'])
+    0.8773772754949931 <= v[b] +0.9 *(sum['y[1614]'])
+    0.8773772754949931 <= v[b] +0.9 *(sum['y[1615]'])
+    0.8773772754949931 <= v[b] +0.9 *(sum['y[1886]'])
+    0.8773772754949931 <= v[b] +0.9 *(sum['y[2072]'])
+
+   pbnd < vi[c] 
+
+    0.0 >= v[c] - 10.36316841207358*(sum['y[89]'])
+    Set Solution
+
+MIPSOL
+KO set: [2240] -> ['TALA']
+Vo[b]: 0.3542284908471629
+Vo[c]: 10.355927236843623
+MIPSOL Incbnt = 10.355927236843623
+MIPSOL Bound = 1e+100
+Curnt Pbnd = -1000
+Vi[c]: 0.0
+Vi[b]: 0.8696737279655504
+>> Algorithm response: 
+
+   |vi[b] - vo[b]| > 1e-6 
+
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[109]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[239]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[1163]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[1347]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[1466]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[1614]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[1615]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[1886]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[2208]'])
+    0.8696737279655504 <= v[b] +0.9 *(sum['y[2240]'])
+
+   pbnd < vi[c] 
+
+    0.0 >= v[c] - 10.355927236843623*(sum['y[2240]'])
+    Set Solution
+
+MIP
+MIP_objbnd -> 1e+100
+MIP_objbst -> -1e+100
+
+Root relaxation: objective 1.035593e+01, 1343 iterations, 0.08 seconds (0.08 work units)
+
+MIP
+MIP_objbnd -> 10.355927236843623
+MIP_objbst -> -1e+100
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0   10.35593    0    2          -   10.35593      -     -    0s
+
+MIP
+MIP_objbnd -> 10.355927236843623
+MIP_objbst -> -1e+100
+
+MIP
+MIP_objbnd -> 10.355927236843623
+MIP_objbst -> -1e+100
+
+MIPSOL
+KO set: [1614] -> ['MDH2']
+Vo[b]: 0.8855712275519723
+Vo[c]: 0.0
+MIPSOL Incbnt = -0.0
+MIPSOL Bound = 10.355927236843623
+Curnt Pbnd = -1000
+Vi[c]: 0.0
+Vi[b]: 0.8855712275573172
+>> Algorithm response: 
+
+   curobj - vi[c] < 1e-6 & flag 
+
+    Update: pbdn = 0.0
+H    0     0                      -0.0000000   10.35593      -     -    0s
+     0     0   10.35593    0    2   -0.00000   10.35593      -     -    0s
+
+MIP
+MIP_objbnd -> 10.355927236843623
+MIP_objbst -> -0.0
+
+MIP
+MIP_objbnd -> 10.355927236843623
+MIP_objbst -> -0.0
+
+MIP
+MIP_objbnd -> 10.355927236843623
+MIP_objbst -> -0.0
+     0     2   10.35593    0    2   -0.00000   10.35593      -     -    0s
+
+MIP
+MIP_objbnd -> 10.355927236843623
+MIP_objbst -> -0.0
+
+MIPSOL
+KO set: [1168] -> ['GLCptspp']
+Vo[b]: 0.35422849084716285
+Vo[c]: 10.241852763507659
+MIPSOL Incbnt = 10.241852763507659
+MIPSOL Bound = 10.355927236843623
+Curnt Pbnd = -0.0
+Vi[c]: 0.0
+Vi[b]: 0.862684701801387
+>> Algorithm response: 
+
+   |vi[b] - vo[b]| > 1e-6 
+
+    0.862684701801387 <= v[b] +0.9 *(sum['y[109]'])
+    0.862684701801387 <= v[b] +0.9 *(sum['y[239]'])
+    0.862684701801387 <= v[b] +0.9 *(sum['y[1038]'])
+    0.862684701801387 <= v[b] +0.9 *(sum['y[1163]'])
+    0.862684701801387 <= v[b] +0.9 *(sum['y[1168]'])
+    0.862684701801387 <= v[b] +0.9 *(sum['y[1466]'])
+    0.862684701801387 <= v[b] +0.9 *(sum['y[1614]'])
+    0.862684701801387 <= v[b] +0.9 *(sum['y[1615]'])
+    0.862684701801387 <= v[b] +0.9 *(sum['y[1886]'])
+
+MIP
+MIP_objbnd -> 10.355927236843623
+MIP_objbst -> -0.0
+
+MIPSOL
+KO set: [1252] -> ['GND']
+Vo[b]: 0.35422849084716285
+Vo[c]: 10.355927236843623
+MIPSOL Incbnt = 10.355927236843623
+MIPSOL Bound = 10.355927236843623
+Curnt Pbnd = -0.0
+Vi[c]: 0.0
+Vi[b]: 0.869660211436815
+>> Algorithm response: 
+
+   |vi[b] - vo[b]| > 1e-6 
+
+    0.869660211436815 <= v[b] +0.9 *(sum['y[109]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[239]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[1038]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[1163]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[1347]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[1466]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[1614]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[1615]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[1886]'])
+    0.869660211436815 <= v[b] +0.9 *(sum['y[2116]'])
+*    2     0               1      10.3559272   10.35593  0.00%  13.0    0s
+
+Cutting planes:
+  Lazy constraints: 48
+
+Explored 3 nodes (1369 simplex iterations) in 0.68 seconds (0.39 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 2: 10.3559 -0 
+
+Optimal solution found (tolerance 1.00e-04)
+Warning: max constraint violation (1.6984e-06) exceeds tolerance
+Best objective 1.035592723684e+01, best bound 1.035592723684e+01, gap 0.0000%
+
+User-callback calls 266, time in user-callback 0.17 sec
+
+>> >> Checking on CB Results
+
+>> On Objective chemical
+
+Set parameter IntFeasTol to value 1e-06
+Set parameter Presolve to value 0
+
+>> >> Checking on CB Results
+
+>> On Objective biomass
+
+Set parameter IntFeasTol to value 1e-06
+Set parameter Presolve to value 0
+ 
+>>Strategy ['GND'] -> [1252]
+
+>> Soltype Optimal
+|    |   V_index | Name                           |      CB_P | IOF      |        IC |
+|---:|----------:|:-------------------------------|----------:|:---------|----------:|
+|  0 |       925 | BIOMASS_Ec_iAF1260_core_59p81M |  0.354228 | biomass  |  0.86966  |
+|  1 |       925 | BIOMASS_Ec_iAF1260_core_59p81M |  0.354228 | chemical |  0.354228 |
+|  2 |       932 | EX_succ_e                      | 10.3559   | biomass  |  0        |
+|  3 |       932 | EX_succ_e                      | 10.3559   | chemical | 10.363    |

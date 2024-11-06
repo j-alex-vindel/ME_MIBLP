@@ -54,7 +54,7 @@ def CB_sol_OP(network:M_Network=None,k:Ks=None,log:bool=True,speed:bool=False,th
     print(f"Chemical: {network.Rxn[network.chemical]} -> {network.chemical}")
     print(f"Growth: {network.Rxn[network.biomass]} -> {network.biomass}")
     print(f"Target: {network.target}")
-    print(f"Minprod: {network.FVA[network.biomass]}")
+    print(f"Minprod: {network.minprod}")
     print(f"FBA v[b]: {network.FBA[network.biomass]}")
     
 

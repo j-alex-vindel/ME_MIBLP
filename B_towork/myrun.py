@@ -24,16 +24,18 @@ def main(arg1=None,arg2=None,name:str=None,sleep:int=None,file:str=None):
 
 
 if __name__ == '__main__':
-    strains = ['ijo','ijr','iaf']
+    strains = ['ijr']
     checks = ['A','B','C']
     sleep = 10
-    file = f"algorcheck"
-    name = 'towork'
-    arg2 = 'y - all all'
-    for strain in strains:
-        main(arg1=strain,arg2=arg2,name=name,sleep=sleep,file=file)
-
-
+    file = f"full_run"
+    ks = [1,2,3]
+    
+    strains = {"iJR904":[366,376],'iJO1366':[340,422,91,87],'iAF1260':[845,772,707,764]}
+    for k in ks:
+        for strain,indeces in strains.items():
+            for index in indeces:
+                main(arg1=k,arg2=index,name=strain,file=file,sleep=sleep)
+        
 
 # =========================================================================================
 # =========================================================================================
